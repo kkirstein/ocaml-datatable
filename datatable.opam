@@ -1,0 +1,19 @@
+opam-version: "2.0"
+name: "datatable"
+version: "0.1.0"
+maintainer: "Kay-Uwe Kirstein <kay-uwe@kirsteinhome.ch>"
+authors: ["Kay-Uwe Kirstein <kay-uwe@kirsteinhome.ch>"]
+synopsis: "Handle tabular data in OCaml"
+dev-repo: "git+https://github.com/kkirstein/ocaml-datatable.git"
+homepage: "https://github.com/kkirstein/ocaml-datatable.git"
+bug-reports: "https://github.com/kkirstein/ocaml-datatable/issues"
+license: "MIT"
+build: [
+	["dune" "subst"] {pinned}
+	["dune" "build" "-p" name "-j" jobs]
+	["dune" "runtest" "-p" name "-j" jobs] {with-test}
+]
+depends: [
+	"dune" {build}
+	"alcotest" {with-test}
+]
