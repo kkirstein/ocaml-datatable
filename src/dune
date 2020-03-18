@@ -1,0 +1,6 @@
+; vim: set sw=2 ts=2:
+(library
+	(name datatable)
+	(public_name datatable)
+	(modules_without_implementation column datatable))
+
