@@ -2,5 +2,5 @@
 (library
 	(name datatable)
 	(public_name datatable)
-	(modules_without_implementation column datatable))
+	(modules_without_implementation column))
 
