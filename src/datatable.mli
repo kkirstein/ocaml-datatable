@@ -14,12 +14,12 @@ type t
 (** Abstract data type holding tabular data *)
 
 
-val get_col : string -> Column.t option
+val get_col : string -> Series.t option
 (** [get_col name] Returns the column of given name.
     Returns None if [name] does not exist. *)
 
 
-val get_row : int -> Column.data_type list option
+val get_row : int -> Series.data_type list option
 (** [get_row i] Returns the data row of given numeric index [i].
  Return None if index is out-of-bounds. *)
 

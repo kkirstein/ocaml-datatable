@@ -8,6 +8,11 @@
 
 type t = {
   name : string;
-  columns : Column.t list
+  columns : Series.t list
 }
+
+
+let get_row _i = None
+
+let get_col _names = None
 
