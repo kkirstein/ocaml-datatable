@@ -11,8 +11,10 @@ type t = {
   columns : Series.t list
 }
 
+let create name data =
+  {name; columns = data}
 
-let get_row _i = None
+let get_row _i _dt = None
 
-let get_col _names = None
+let get_col _names _dt = None
 

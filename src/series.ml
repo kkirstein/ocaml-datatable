@@ -87,9 +87,9 @@ type t =
 
 
 type data_type =
-  | Float of float
-  | Int of int
-  | Str of string
+  | DFloat of float
+  | DInt of int
+  | DStr of string
 
 
 
