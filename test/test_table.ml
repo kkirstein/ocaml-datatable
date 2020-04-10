@@ -1,7 +1,7 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
-open Datatable
-open Datatable__.Series
+open Datatable.Table
+open Datatable.Series
 (* open Datatable.Series *)
 
 (* Testable types *)
