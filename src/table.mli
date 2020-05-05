@@ -22,7 +22,7 @@ val get_col : string -> t -> Series.t option
     Returns None if [name] does not exist. *)
 
 
-val get_row : int -> t -> row option
+val get_row : ?names : string list -> int -> t -> row option
 (** [get_row i dt] Returns the data row of given numeric index [i] of datatable [dt].
     Return None if index is out-of-bounds. *)
 

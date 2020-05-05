@@ -17,7 +17,23 @@ type t = {
 let create name data =
   {name; columns = data}
 
-let get_row _i _dt = None
+let get_row ?names idx dt =
+  let cols =  match names with
+    | None    -> List.map (fun x -> Series.name x) dt.columns
+    | Some n  -> n
+  in
+  match cols with
+  | [] -> None
+  | _   -> try
+      Some (List.fold_left
+              (fun acc c -> let cname = Series.name c in
+                if List.mem cname cols 
+                then Row.add cname (Series.get idx c) acc
+                else acc)
+              Row.empty dt.columns)
+    with
+      _ -> None
 
-let get_col _names _dt = None
+let get_col _name _dt =
+  None
 

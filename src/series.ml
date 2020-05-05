@@ -149,4 +149,15 @@ type t =
   | Str of Strings.t
 
 
+let name = function
+  | Float s -> Floats.name s
+  | Int s   -> Ints.name s
+  | Str s   -> Strings.name s
+
+
+let get idx = function
+  | Float s -> Floats.get idx s
+  | Int s   -> Ints.get idx s
+  | Str s   -> Strings.get idx s
+
 
