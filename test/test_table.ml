@@ -20,9 +20,9 @@ let data_row = Alcotest.testable (Fmt.of_to_string data_row_to_string) (=)
 
 (* The tests *)
 let dt = create "data" [
-    Str (Strings.from_list ~name:"order" ["eins"; "zwei"; "drei"]);
-    Float (Floats.from_list ~name:"values" [1.47; 2.71; 3.14]);
-    Int (Ints.from_list ~name:"count" [3; 2; 1]);
+    SStr (Strings.from_list ~name:"order" ["eins"; "zwei"; "drei"]);
+    SFloat (Floats.from_list ~name:"values" [1.47; 2.71; 3.14]);
+    SInt (Ints.from_list ~name:"count" [3; 2; 1]);
   ]
 
 (* ---------------------------------------------------------------------- *)

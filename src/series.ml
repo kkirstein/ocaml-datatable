@@ -42,6 +42,7 @@ module type S = sig
 end
 
 
+(*
 module type S_el = sig
   type t
   (** Abstract data type for series of data *)
@@ -54,6 +55,7 @@ module type S_el = sig
       desired (numerical) type. Returns [None], if convesion fails *)
 
 end
+*)
 
 
 (* Float series *)
@@ -144,20 +146,20 @@ end
 (* basic module type for data series *)
 (* FIXME: maybe a GADT could help to reduce boilerplate code here *)
 type t =
-  | Float of Floats.t
-  | Int of Ints.t
-  | Str of Strings.t
+  | SFloat of Floats.t
+  | SInt of Ints.t
+  | SStr of Strings.t
 
 
 let name = function
-  | Float s -> Floats.name s
-  | Int s   -> Ints.name s
-  | Str s   -> Strings.name s
+  | SFloat s -> Floats.name s
+  | SInt s   -> Ints.name s
+  | SStr s   -> Strings.name s
 
 
 let get idx = function
-  | Float s -> Floats.get idx s
-  | Int s   -> Ints.get idx s
-  | Str s   -> Strings.get idx s
+  | SFloat s -> Floats.get idx s
+  | SInt s   -> Ints.get idx s
+  | SStr s   -> Strings.get idx s
 
 
