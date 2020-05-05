@@ -7,11 +7,24 @@
 
 open Bigarray
 
+(* common types, e.g., for row data *)
+(*type t =
+  | Float of Floats.t
+  | Int of Ints.t
+  | Str of Strings.t
+*)
+
+type data_type =
+  | DFloat of float
+  | DInt of int
+  | DStr of string
+
+
 module type Series = sig
   type t
   (** Abstract data type for series of data *)
 
-  type data_type
+  type el_type
   (** The data type of a single element *)
 
   val name : t -> string
@@ -25,7 +38,7 @@ module type Series = sig
   (** [get i d] returns the element of [d] at index [i].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-  val set : int -> data_type -> t -> t
+  val set : int -> data_type -> t -> unit
   (** [set i d s] sets the element at index [i] to [d] of series [s].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 end
@@ -41,17 +54,31 @@ module type Series_element = sig
   val from_string : string -> t option
   (** [from_string s] converts given string [s] to the
       desired (numerical) type. Returns [None], if convesion fails *)
+
 end
 
 
 (* Float series *)
-module Floats = struct
+module Floats : Series = struct
 
   type t = {
     name : string;
     data : (float, float32_elt, c_layout) Array1.t
   }
-  type data_type = float
+  type el_type = float
+
+  let name s = s.name
+
+  let from_strings _strs =
+    failwith "Not implemented"
+
+  let get idx s =
+    DFloat (Array1.get s.data idx)
+
+  let set idx d s =
+    match d with
+    | DFloat d  -> Array1.set s.data idx d
+    | _         -> failwith "Invalid data type"
 
 end
 
@@ -63,7 +90,7 @@ module Ints = struct
     name : string;
     data : (int, int_elt, c_layout) Array1.t
   }
-  type data_type =  int
+  type el_type =  int
 
 end
 
@@ -75,21 +102,9 @@ module Strings = struct
     name : string;
     data : string array
   }
-  type data_type = string
+  type el_type = string
 
 end
-
-
-type t =
-  | Float of Floats.t
-  | Int of Ints.t
-  | Str of Strings.t
-
-
-type data_type =
-  | DFloat of float
-  | DInt of int
-  | DStr of string
 
 
 
