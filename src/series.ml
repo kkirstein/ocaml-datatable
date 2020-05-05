@@ -13,6 +13,11 @@ type data_type =
   | DInt of int
   | DStr of string
 
+type summary = {
+  name : string;
+  data_type : string;
+  length : int }
+
 
 module type S = sig
   type t
@@ -39,6 +44,10 @@ module type S = sig
   val set : int -> data_type -> t -> unit
   (** [set i d s] sets the element at index [i] to [d] of series [s].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+  val summary : t -> summary
+  (** [summary d] returns a short summary of the data series [s]
+      with its data type, and some infos on the values, like length, min/max etc. *)
 end
 
 
@@ -83,6 +92,9 @@ module Floats : (S with type el_t := float) = struct
     | DFloat d  -> Array1.set s.data idx d
     | _         -> failwith "Invalid data type"
 
+  let summary d =
+    {name = d.name; data_type = "float"; length = Array1.dim d.data}
+
 end
 
 
@@ -110,6 +122,9 @@ module Ints : (S with type el_t := int) = struct
     match d with
     | DInt d  -> Array1.set s.data idx d
     | _         -> failwith "Invalid data type"
+
+  let summary d =
+    {name = d.name; data_type = "int"; length = Array1.dim d.data}
 
 end
 
@@ -139,6 +154,8 @@ module Strings : (S with type el_t := string) = struct
     | DStr d  -> Array.set s.data idx d
     | _         -> failwith "Invalid data type"
 
+  let summary d =
+    {name = d.name; data_type = "string"; length = Array.length d.data}
 
 end
 
@@ -162,4 +179,9 @@ let get idx = function
   | SInt s   -> Ints.get idx s
   | SStr s   -> Strings.get idx s
 
+
+let summary = function
+  | SFloat s -> Floats.summary s
+  | SInt s   -> Ints.summary s
+  | SStr s   -> Strings.summary s
 

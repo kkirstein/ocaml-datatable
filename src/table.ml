@@ -36,6 +36,8 @@ let get_row ?names idx dt =
   in
   if Row.is_empty row then None else Some row
 
-let get_col _name _dt =
-  None
+let get_col name dt =
+match List.filter (fun c -> (Series.name c) = name) dt.columns with
+  | []  -> None
+  | cs  -> Some (List.hd cs)
 

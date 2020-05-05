@@ -19,7 +19,8 @@ type row = Series.data_type Row.t
 
 val get_col : string -> t -> Series.t option
 (** [get_col name dt] Returns the column of given name of datatable [dt].
-    Returns None if [name] does not exist. *)
+    Returns None if [name] does not exist. If more than one column of
+    given name is present, only the first one found is returned. *)
 
 
 val get_row : ?names : string list -> int -> t -> row option

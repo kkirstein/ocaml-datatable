@@ -16,7 +16,14 @@ type data_type =
   | DFloat of float
   | DInt of int
   | DStr of string
-(** Data type of a single element of a data series *)
+  (** Data type of a single element of a data series *)
+
+
+type summary = {
+  name : string;
+  data_type : string;
+  length : int }
+(** Some key properties of a data series, like its name, type, and length *)
 
 
 module type S = sig
@@ -44,6 +51,11 @@ module type S = sig
   val set : int -> data_type -> t -> unit
   (** [set i d s] sets the element at index [i] to [d] of series [s].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+  val summary : t -> summary
+  (** [summary d] returns a short summary of the data series [s]
+      with its data type, and some infos on the values, like length, min/max etc. *)
+
 end
 
 
@@ -75,4 +87,7 @@ val get : int -> t -> data_type
     Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
 
+val summary : t -> summary
+(** [summary d] returns a short summary of the data series [s]
+    with its data type, and some infos on the values, like length, min/max etc. *)
 
