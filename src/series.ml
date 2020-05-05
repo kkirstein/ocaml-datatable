@@ -61,13 +61,13 @@ module Floats : (S with type el_t := float) = struct
 
   type t = {
     name : string;
-    data : (float, float32_elt, c_layout) Array1.t
+    data : (float, float64_elt, c_layout) Array1.t
   }
 
   let name s = s.name
 
   let from_list ~name l =
-    {name; data = Array1.of_array float32 c_layout (Array.of_list l)}
+    {name; data = Array1.of_array float64 c_layout (Array.of_list l)}
     
   let from_strings ~name _strs =
     let _ = name in
