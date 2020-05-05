@@ -8,29 +8,27 @@
 open Bigarray
 
 (* common types, e.g., for row data *)
-(*type t =
-  | Float of Floats.t
-  | Int of Ints.t
-  | Str of Strings.t
-*)
-
 type data_type =
   | DFloat of float
   | DInt of int
   | DStr of string
 
 
-module type Series = sig
+module type S = sig
   type t
   (** Abstract data type for series of data *)
 
-  type el_type
+  type el_t
   (** The data type of a single element *)
 
   val name : t -> string
   (** The name identifier for the data column *)
 
-  val from_strings : string list -> string -> t
+  val from_list : name : string -> el_t list -> t
+  (** [from_list ~name l] constructs a data series instance from
+      given list [l] and assigns [name] to it. *)
+
+  val from_strings : name : string -> string list -> t
   (** [from_string strs name] contructs a data series from the
       given list of strings [strs] *)
 
@@ -44,7 +42,7 @@ module type Series = sig
 end
 
 
-module type Series_element = sig
+module type S_el = sig
   type t
   (** Abstract data type for series of data *)
 
@@ -59,17 +57,20 @@ end
 
 
 (* Float series *)
-module Floats : Series = struct
+module Floats : (S with type el_t := float) = struct
 
   type t = {
     name : string;
     data : (float, float32_elt, c_layout) Array1.t
   }
-  type el_type = float
 
   let name s = s.name
 
-  let from_strings _strs =
+  let from_list ~name l =
+    {name; data = Array1.of_array float32 c_layout (Array.of_list l)}
+    
+  let from_strings ~name _strs =
+    let _ = name in
     failwith "Not implemented"
 
   let get idx s =
@@ -84,27 +85,68 @@ end
 
 
 (* Int series *)
-module Ints = struct
+module Ints : (S with type el_t := int) = struct
 
   type t = {
     name : string;
     data : (int, int_elt, c_layout) Array1.t
   }
-  type el_type =  int
+
+  let name s = s.name
+
+  let from_list ~name l =
+    {name; data = Array1.of_array int c_layout (Array.of_list l)}
+    
+  let from_strings ~name _strs =
+    let _ = name in
+    failwith "Not implemented"
+
+  let get idx s =
+    DInt (Array1.get s.data idx)
+
+  let set idx d s =
+    match d with
+    | DInt d  -> Array1.set s.data idx d
+    | _         -> failwith "Invalid data type"
 
 end
 
 
 (* String series *)
-module Strings = struct
+module Strings : (S with type el_t := string) = struct
 
   type t = {
     name : string;
     data : string array
   }
-  type el_type = string
+
+  let name s = s.name
+
+  let from_list ~name l =
+    {name; data = Array.of_list l}
+    
+  let from_strings ~name _strs =
+    let _ = name in
+    failwith "Not implemented"
+
+  let get idx s =
+    DStr (Array.get s.data idx)
+
+  let set idx d s =
+    match d with
+    | DStr d  -> Array.set s.data idx d
+    | _         -> failwith "Invalid data type"
+
 
 end
+
+
+(* basic module type for data series *)
+(* FIXME: maybe a GADT could help to reduce boilerplate code here *)
+type t =
+  | Float of Floats.t
+  | Int of Ints.t
+  | Str of Strings.t
 
 
 
