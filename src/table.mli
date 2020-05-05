@@ -13,13 +13,16 @@
 type t
 (** Abstract data type holding tabular data *)
 
+module Row : (Map.S with type key = string)
+type row = Series.data_type Row.t
+(** Data type to hold data of a single row. *)
 
 val get_col : string -> t -> Series.t option
 (** [get_col name dt] Returns the column of given name of datatable [dt].
     Returns None if [name] does not exist. *)
 
 
-val get_row : int -> t -> Series.data_type list option
+val get_row : int -> t -> row option
 (** [get_row i dt] Returns the data row of given numeric index [i] of datatable [dt].
     Return None if index is out-of-bounds. *)
 

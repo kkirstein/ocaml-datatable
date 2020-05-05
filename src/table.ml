@@ -6,6 +6,9 @@
  *)
 
 
+module Row = Map.Make(String)
+type row = Series.data_type Row.t
+
 type t = {
   name : string;
   columns : Series.t list
