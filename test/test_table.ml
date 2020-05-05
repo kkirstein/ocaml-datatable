@@ -39,10 +39,15 @@ let test_get_row () =
   let act = get_row 1 dt in
   Alcotest.(check data_row) "get_row" exp act
 (* ---------------------------------------------------------------------- *)
+let test_get_row_empty () =
+  Alcotest.(check data_row) "get_row empty" None (get_row ~names:[] 1 dt);
+  Alcotest.(check data_row) "get_row empty" None (get_row 3 dt);
+  Alcotest.(check data_row) "get_row empty" None (get_row ~names:["eins"; "zwei"] 1 dt)
 (* ---------------------------------------------------------------------- *)
 
 (* Test set *)
 let test_set = [
-  "test get_row", `Quick, test_get_row
+  "test get_row", `Quick, test_get_row;
+  "test get_row empty", `Quick, test_get_row_empty
 ]
 

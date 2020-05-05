@@ -22,17 +22,19 @@ let get_row ?names idx dt =
     | None    -> List.map (fun x -> Series.name x) dt.columns
     | Some n  -> n
   in
-  match cols with
-  | [] -> None
-  | _   -> try
-      Some (List.fold_left
-              (fun acc c -> let cname = Series.name c in
-                if List.mem cname cols 
-                then Row.add cname (Series.get idx c) acc
-                else acc)
-              Row.empty dt.columns)
-    with
-      _ -> None
+  let row = match cols with
+    | []  -> Row.empty
+    | _   -> try
+        List.fold_left
+          (fun acc c -> let cname = Series.name c in
+            if List.mem cname cols 
+            then Row.add cname (Series.get idx c) acc
+            else acc)
+          Row.empty dt.columns
+      with
+        _ -> Row.empty
+  in
+  if Row.is_empty row then None else Some row
 
 let get_col _name _dt =
   None
