@@ -52,9 +52,8 @@ module type S = sig
   (** [set i d s] sets the element at index [i] to [d] of series [s].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-  val summary : t -> summary
-  (** [summary d] returns a short summary of the data series [s]
-      with its data type, and some infos on the values, like length, min/max etc. *)
+  val length : t -> int
+  (** [length d] returns the length (= number of entries) of the data series [s]. *)
 
 end
 

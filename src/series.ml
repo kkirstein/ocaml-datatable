@@ -13,12 +13,6 @@ type data_type =
   | DInt of int
   | DStr of string
 
-type summary = {
-  name : string;
-  data_type : string;
-  length : int }
-
-
 module type S = sig
   type t
   (** Abstract data type for series of data *)
@@ -45,9 +39,8 @@ module type S = sig
   (** [set i d s] sets the element at index [i] to [d] of series [s].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-  val summary : t -> summary
-  (** [summary d] returns a short summary of the data series [s]
-      with its data type, and some infos on the values, like length, min/max etc. *)
+  val length : t -> int
+  (** [length d] returns the length (= number of entries) of the data series [s]. *)
 end
 
 
@@ -79,7 +72,7 @@ module Floats : (S with type el_t := float) = struct
 
   let from_list ~name l =
     {name; data = Array1.of_array float64 c_layout (Array.of_list l)}
-    
+
   let from_strings ~name _strs =
     let _ = name in
     failwith "Not implemented"
@@ -92,8 +85,8 @@ module Floats : (S with type el_t := float) = struct
     | DFloat d  -> Array1.set s.data idx d
     | _         -> failwith "Invalid data type"
 
-  let summary d =
-    {name = d.name; data_type = "float"; length = Array1.dim d.data}
+  let length d =
+    Array1.dim d.data
 
 end
 
@@ -110,7 +103,7 @@ module Ints : (S with type el_t := int) = struct
 
   let from_list ~name l =
     {name; data = Array1.of_array int c_layout (Array.of_list l)}
-    
+
   let from_strings ~name _strs =
     let _ = name in
     failwith "Not implemented"
@@ -123,8 +116,8 @@ module Ints : (S with type el_t := int) = struct
     | DInt d  -> Array1.set s.data idx d
     | _         -> failwith "Invalid data type"
 
-  let summary d =
-    {name = d.name; data_type = "int"; length = Array1.dim d.data}
+  let length d =
+    Array1.dim d.data
 
 end
 
@@ -141,7 +134,7 @@ module Strings : (S with type el_t := string) = struct
 
   let from_list ~name l =
     {name; data = Array.of_list l}
-    
+
   let from_strings ~name _strs =
     let _ = name in
     failwith "Not implemented"
@@ -154,8 +147,8 @@ module Strings : (S with type el_t := string) = struct
     | DStr d  -> Array.set s.data idx d
     | _         -> failwith "Invalid data type"
 
-  let summary d =
-    {name = d.name; data_type = "string"; length = Array.length d.data}
+  let length d =
+    Array.length d.data
 
 end
 
@@ -180,8 +173,14 @@ let get idx = function
   | SStr s   -> Strings.get idx s
 
 
+type summary = {
+  name : string;
+  data_type : string;
+  length : int }
+
+
 let summary = function
-  | SFloat s -> Floats.summary s
-  | SInt s   -> Ints.summary s
-  | SStr s   -> Strings.summary s
+  | SFloat s -> {name = Floats.name s; data_type = "float"; length = Floats.length s}
+  | SInt s   -> {name = Ints.name s; data_type = "float"; length = Ints.length s}
+  | SStr s   -> {name = Strings.name s; data_type = "float"; length = Strings.length s}
 
