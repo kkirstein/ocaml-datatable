@@ -56,7 +56,10 @@ let test_get_col () =
   let exp_int = SInt (Ints.from_list ~name:"count" [3; 2; 1]) in
   Alcotest.(check (option data_series)) "get_col SStr" (Some exp_str) (get_col "order" dt);
   Alcotest.(check (option data_series)) "get_col SFloat" (Some exp_float) (get_col "values" dt);
-  Alcotest.(check (option data_series)) "get_col SInt" (Some exp_int) (get_col "count" dt)
+  Alcotest.(check (option data_series)) "get_col SInt" (Some exp_int) (get_col "count" dt);
+  Alcotest.(check (option data_series)) "get_col SInt" None (get_col "wrong" dt)
+(* ---------------------------------------------------------------------- *)
+
     
 
 
