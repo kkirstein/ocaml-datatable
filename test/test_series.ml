@@ -3,6 +3,12 @@
 open Datatable.Series
 
 (* Testable types *)
+let data_type_to_string d =
+  match d with
+  | DInt i -> "DInt: " ^ string_of_int i
+  | DFloat f -> "DFloat: " ^ string_of_float f
+  | DStr s -> "DStr: " ^ s
+
 let summary_to_string sum =
   Printf.sprintf "{name: %s; type: %s; length: %d}" sum.name sum.data_type
     sum.length
@@ -10,6 +16,8 @@ let summary_to_string sum =
 let data_series_to_string s =
   let sum = summary s in
   summary_to_string sum
+
+let data_type = Alcotest.testable (Fmt.of_to_string data_type_to_string) ( = )
 
 let data_series =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
@@ -38,5 +46,33 @@ let test_summary () =
     { name = "order"; data_type = "string"; length = 3 }
     (summary s_strs)
 
+(* ---------------------------------------------------------------------- *)
+let test_from_list () =
+  Alcotest.(check data_series)
+    "from_list -> SInt" s_ints
+    (SInt (Ints.from_list ~name:"count" [ 3; 2; 1; 0 ]));
+  Alcotest.(check data_series)
+    "from_list -> SFloat" s_floats
+    (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]));
+  Alcotest.(check data_series)
+    "from_list -> SStr" s_strs
+    (SStr
+       (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+
+(* ---------------------------------------------------------------------- *)
+let test_get () =
+  (* let (SInt si) = s_ints in
+     Alcotest.(check data_type) "test get 1" (DInt 3) (Ints.get 0 si) *)
+  Alcotest.fail "Test not implemented"
+
+(* ---------------------------------------------------------------------- *)
+let test_set () = Alcotest.fail "Test not implemented"
+
 (* Test set *)
-let test_set = [ ("test summary", `Quick, test_summary) ]
+let test_set =
+  [
+    ("test summary", `Quick, test_summary);
+    ("test from_list", `Quick, test_from_list);
+    ("test get", `Quick, test_get);
+    ("test set", `Quick, test_set);
+  ]
