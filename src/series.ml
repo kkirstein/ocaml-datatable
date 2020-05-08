@@ -143,6 +143,6 @@ let summary = function
   | SFloat s ->
       { name = Floats.name s; data_type = "float"; length = Floats.length s }
   | SInt s ->
-      { name = Ints.name s; data_type = "float"; length = Ints.length s }
+      { name = Ints.name s; data_type = "int"; length = Ints.length s }
   | SStr s ->
-      { name = Strings.name s; data_type = "float"; length = Strings.length s }
+      { name = Strings.name s; data_type = "string"; length = Strings.length s }

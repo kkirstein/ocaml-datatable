@@ -3,8 +3,6 @@
 open Datatable.Table
 open Datatable.Series
 
-(* open Datatable.Series *)
-
 (* Testable types *)
 let data_row_to_string row =
   match row with
