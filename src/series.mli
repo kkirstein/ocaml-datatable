@@ -58,6 +58,34 @@ module Ints : S with type el_t := int
 module Strings : S with type el_t := string
 (** Module Strings for series of string data *)
 
+
+module type S1 = sig
+  type t
+  (** Abstract data type for series of data *)
+
+  type dtype
+  (** The data type of a single element *)
+
+  val name : t -> string
+  (** The name identifier for the data column *)
+
+  val from_list : name:string -> dtype list -> t
+  (** [from_list ~name l] constructs a data series instance from
+      given list [l] and assigns [name] to it. *)
+
+  val get : int -> t -> dtype
+  (** [get i d] returns the element of [d] at index [i].
+      Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+  val set : int -> dtype -> t -> unit
+  (** [set i d s] sets the element at index [i] to [d] of series [s].
+      Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+  val length : t -> int
+  (** [length d] returns the length (= number of entries) of the data series [s]. *)
+end
+
+
 type t =
   | SFloat of Floats.t
   | SInt of Ints.t
