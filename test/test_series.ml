@@ -61,12 +61,16 @@ let test_from_list () =
 
 (* ---------------------------------------------------------------------- *)
 let test_get () =
-  (* let (SInt si) = s_ints in
-     Alcotest.(check data_type) "test get 1" (DInt 3) (Ints.get 0 si) *)
-  Alcotest.fail "Test not implemented"
+  Alcotest.(check data_type) "test get first" (DInt 3) (get 0 s_ints);
+  Alcotest.(check data_type) "test get last" (DInt 0) (get 3 s_ints);
+  Alcotest.check_raises "test get out-of-bound"
+    (Invalid_argument "index out of bounds")
+    (fun () -> ignore(get 4 s_ints))
 
 (* ---------------------------------------------------------------------- *)
-let test_set () = Alcotest.fail "Test not implemented"
+let test_set () =
+  let () = set 1 (DInt 42) s_ints in
+  Alcotest.(check data_type) "test get first" (DInt 42) (get 1 s_ints)
 
 (* Test set *)
 let test_set =

@@ -137,6 +137,11 @@ let get idx = function
   | SInt s -> Ints.get idx s
   | SStr s -> Strings.get idx s
 
+let set idx d = function
+  | SFloat s -> Floats.set idx d s
+  | SInt s -> Ints.set idx d s
+  | SStr s -> Strings.set idx d s
+
 type summary = { name : string; data_type : string; length : int }
 
 let summary = function
@@ -146,3 +151,4 @@ let summary = function
       { name = Ints.name s; data_type = "int"; length = Ints.length s }
   | SStr s ->
       { name = Strings.name s; data_type = "string"; length = Strings.length s }
+

@@ -67,7 +67,11 @@ val name : t -> string
 (** The name identifier of a data series *)
 
 val get : int -> t -> data_type
-(** [get i d] returns the element of [d] at index [i].
+(** [get i s] returns the element of [s] at index [i].
+    Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+val set : int -> data_type -> t -> unit
+(** [set i d s] sets the element of [d] at index [i] to the value of [d].
     Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
 val summary : t -> summary
