@@ -107,18 +107,21 @@ module Strings = Generic.Make(struct
 
 
 (* basic module type for data series *)
-(* FIXME: maybe a GADT could help to reduce boilerplate code here *)
-type t = SFloat of Floats.t | SInt of Ints.t | SStr of Strings.t
+type _ t =
+  | SFloat : Floats.t -> float t
+  | SInt : Ints.t -> int t
+  | SStr : Strings.t -> string t
 
-let name = function
+let name : type a. a t -> string = function
   | SFloat s -> Floats.name s
   | SInt s -> Ints.name s
   | SStr s -> Strings.name s
 
-let get idx = function
-  | SFloat s -> DFloat (Floats.get idx s)
-  | SInt s -> DInt (Ints.get idx s)
-  | SStr s -> DStr (Strings.get idx s)
+let get : type a. int -> a t -> a = fun idx s ->
+  match s with
+  | SFloat s -> Floats.get idx s
+  | SInt s -> Ints.get idx s
+  | SStr s -> Strings.get idx s
 
 (*let set idx d = function
   | SFloat s -> Floats.set idx d s
@@ -128,7 +131,7 @@ let set _idx _d _s = failwith "Not implemented"
 
 type summary = { name : string; data_type : string; length : int }
 
-let summary = function
+let summary : type a. a t -> summary = function
   | SFloat s ->
       { name = Floats.name s; data_type = "float"; length = Floats.length s }
   | SInt s ->

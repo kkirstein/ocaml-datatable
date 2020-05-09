@@ -58,22 +58,23 @@ module Strings : S with type dtype := string
 (** Module Strings for series of string data *)
 
 
-type t =
-  | SFloat of Floats.t
-  | SInt of Ints.t
-  | SStr of Strings.t  (** Type for a series of data *)
+type _ t =
+  | SFloat : Floats.t -> float t
+  | SInt : Ints.t -> int t
+  | SStr : Strings.t -> string t
+  (** Type for a series of data *)
 
-val name : t -> string
+val name : 'a t -> string
 (** The name identifier of a data series *)
 
-val get : int -> t -> data_type
+val get : int -> 'a t -> 'a
 (** [get i s] returns the element of [s] at index [i].
     Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-val set : int -> data_type -> t -> unit
+val set : int -> 'a -> 'a t -> unit
 (** [set i d s] sets the element of [d] at index [i] to the value of [d].
     Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-val summary : t -> summary
+val summary : 'a t -> summary
 (** [summary d] returns a short summary of the data series [s]
     with its data type, and some infos on the values, like length, min/max etc. *)
