@@ -41,6 +41,58 @@ module type S = sig
 end
 
 
+module type S1 = sig
+  type t
+  (** Abstract data type for series of data *)
+
+  type dtype
+  (** The data type of a single element *)
+
+  val name : t -> string
+  (** The name identifier for the data column *)
+
+  val from_list : name:string -> dtype list -> t
+  (** [from_list ~name l] constructs a data series instance from
+      given list [l] and assigns [name] to it. *)
+
+  val get : int -> t -> dtype
+  (** [get i d] returns the element of [d] at index [i].
+      Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+  val set : int -> dtype -> t -> unit
+  (** [set i d s] sets the element at index [i] to [d] of series [s].
+      Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+
+  val length : t -> int
+  (** [length d] returns the length (= number of entries) of the data series [s]. *)
+end
+
+
+
+module Numeric = struct
+  module type Num = sig
+    type dtype
+    type dtype_elt
+    val dtype_kind : (dtype, dtype_elt) kind
+  end
+
+  module Make (N : Num) : (S1 with type dtype := N.dtype) = struct
+  type t = { name : string; data : (N.dtype, N.dtype_elt, c_layout) Array1.t }
+
+  let name s = s.name
+
+  let from_list ~name l =
+    { name; data = Array1.of_array N.dtype_kind c_layout (Array.of_list l) }
+
+  let get idx s = Array1.get s.data idx
+
+  let set idx d s = Array1.set s.data idx d
+
+  let length d = Array1.dim d.data
+  end
+end
+
+
 (*
 module type S_el = sig
   type t
