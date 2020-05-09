@@ -74,7 +74,7 @@ let test_get () =
 (* ---------------------------------------------------------------------- *)
 let test_set () =
   let () = set 1 42 s_ints in
-  Alcotest.(check int) "test get first" 42 (get 1 s_ints)
+  Alcotest.(check int) "test set" 42 (get 1 s_ints)
 
 (* Test set *)
 let test_set =
