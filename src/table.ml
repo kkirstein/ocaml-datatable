@@ -7,7 +7,6 @@
 
 module Row = Map.Make (String)
 
-
 type column =
   | CFloat of float Series.t
   | CInt of int Series.t
@@ -17,29 +16,43 @@ type t = { name : string; columns : column list }
 
 type row = Series.data_type Row.t
 
-type summary = {
-  name : string;
-  num_rows : int;
-  column_names : string list
-}
+type summary = { name : string; num_rows : int; column_names : string list }
 
 let empty name = { name; columns = [] }
 
-let add_col : type a. a Series.t -> t -> t = fun s dt ->
+let add_col : type a. a Series.t -> t -> t =
+ fun s dt ->
   let open Series in
-  let col = match s with
-    | SFloat _ as c  -> CFloat c
-    | SInt _ as c    -> CInt c
-    | SStr _ as c    -> CStr c
+  let col =
+    match s with
+    | SFloat _ as c -> CFloat c
+    | SInt _ as c -> CInt c
+    | SStr _ as c -> CStr c
   in
-  {dt with columns = col :: dt.columns}
+  { dt with columns = col :: dt.columns }
 
-(*
 let summary dt =
   match dt.columns with
-  | []  -> {name = dt.name; num_rows = 0; column_names = []}
-  | (_c :: _) as cs  -> {name = dt.name; num_rows = Series.length c; column_names = List.map Series.name cs}
+  | [] -> { name = dt.name; num_rows = 0; column_names = [] }
+  | c :: _ as cs ->
+      let len =
+        match c with
+        | CFloat s -> Series.length s
+        | CInt s -> Series.length s
+        | CStr s -> Series.length s
+      in
+      let colnames =
+        List.map
+          (fun x ->
+            match x with
+            | CFloat s -> Series.name s
+            | CInt s -> Series.name s
+            | CStr s -> Series.name s)
+          cs
+      in
+      { name = dt.name; num_rows = len; column_names = colnames }
 
+(*
 let create name data = { name; columns = data }
 
 let get_row ?names idx dt =
@@ -68,4 +81,3 @@ let get_col name dt =
   | [] -> None
   | cs -> Some (List.hd cs)
    *)
-
