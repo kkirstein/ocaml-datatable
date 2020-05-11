@@ -1,9 +1,13 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
+(*
+open Datatable
 open Datatable.Table
-open Datatable.Series
+   *)
+(* open Datatable.Series *)
 
 (* Testable types *)
+       (*
 let data_row_to_string row =
   match row with
   | Some r ->
@@ -18,6 +22,10 @@ let data_row_to_string row =
 
 let data_row = Alcotest.testable (Fmt.of_to_string data_row_to_string) ( = )
 
+
+let data_table_to_string dt =
+  Printf.sprintf "{Table: %s; Columns: %s}" dt.name (List.map (fun x -> Series.name x) dt.columns |> String.concat ",")
+
 let data_series_to_string s =
   let sum = summary s in
   Printf.sprintf "{name: %s; type: %s; length: %d}" sum.name sum.data_type
@@ -25,15 +33,22 @@ let data_series_to_string s =
 
 let data_series =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
+*)
 
 (* The tests *)
-let dt =
+(* let dt =
   create "data"
     [
       SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]);
       SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]);
       SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]);
     ]
+
+
+(* ---------------------------------------------------------------------- *)
+let test_empty_table () = 
+  let empty_dt = empty "data" in
+  Alcotest.(check data_table) "empty table" {name = "data"; columns = []} (empty "data")
 
 (* ---------------------------------------------------------------------- *)
 let test_get_row () =
@@ -84,3 +99,5 @@ let test_set =
     ("test get_row empty", `Quick, test_get_row_empty);
     ("test get_col", `Quick, test_get_col);
   ]
+
+   *)
