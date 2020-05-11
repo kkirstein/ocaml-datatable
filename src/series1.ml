@@ -47,18 +47,18 @@ module Numeric = struct
   end
 
   module Make (N : Num) : (S with type dtype := N.dtype) = struct
-  type t = { name : string; data : (N.dtype, N.dtype_elt, c_layout) Array1.t }
+    type t = { name : string; data : (N.dtype, N.dtype_elt, c_layout) Array1.t }
 
-  let name s = s.name
+    let name s = s.name
 
-  let from_list ~name l =
-    { name; data = Array1.of_array N.dtype_kind c_layout (Array.of_list l) }
+    let from_list ~name l =
+      { name; data = Array1.of_array N.dtype_kind c_layout (Array.of_list l) }
 
-  let get idx s = Array1.get s.data idx
+    let get idx s = Array1.get s.data idx
 
-  let set idx d s = Array1.set s.data idx d
+    let set idx d s = Array1.set s.data idx d
 
-  let length d = Array1.dim d.data
+    let length d = Array1.dim d.data
   end
 end
 
@@ -69,17 +69,17 @@ module Generic = struct
   end
 
   module Make (E : Element) : (S with type dtype := E.dtype) = struct
-  type t = { name : string; data : E.dtype array }
+    type t = { name : string; data : E.dtype array }
 
-  let name s = s.name
+    let name s = s.name
 
-  let from_list ~name l = { name; data = Array.of_list l }
+    let from_list ~name l = { name; data = Array.of_list l }
 
-  let get idx s = s.data.(idx)
+    let get idx s = s.data.(idx)
 
-  let set idx d s = s.data.(idx) <- d
+    let set idx d s = s.data.(idx) <- d
 
-  let length d = Array.length d.data
+    let length d = Array.length d.data
 
   end
 
@@ -123,19 +123,20 @@ let get : type a. int -> a t -> a = fun idx s ->
   | SInt s -> Ints.get idx s
   | SStr s -> Strings.get idx s
 
-(*let set idx d = function
+let set : type a. int -> a -> a t -> unit = fun idx d s ->
+  match s with
   | SFloat s -> Floats.set idx d s
   | SInt s -> Ints.set idx d s
-  | SStr s -> Strings.set idx d s *)
-let set _idx _d _s = failwith "Not implemented"
+  | SStr s -> Strings.set idx d s
+
 
 type summary = { name : string; data_type : string; length : int }
 
 let summary : type a. a t -> summary = function
   | SFloat s ->
-      { name = Floats.name s; data_type = "float"; length = Floats.length s }
+    { name = Floats.name s; data_type = "float"; length = Floats.length s }
   | SInt s ->
-      { name = Ints.name s; data_type = "int"; length = Ints.length s }
+    { name = Ints.name s; data_type = "int"; length = Ints.length s }
   | SStr s ->
-      { name = Strings.name s; data_type = "string"; length = Strings.length s }
+    { name = Strings.name s; data_type = "string"; length = Strings.length s }
 
