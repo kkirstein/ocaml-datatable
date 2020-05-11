@@ -14,12 +14,10 @@
 type data_type =
   | DFloat of float
   | DInt of int
-  | DStr of string
-  (** Data type of a single element of a data series *)
+  | DStr of string  (** Data type of a single element of a data series *)
 
 type summary = { name : string; data_type : string; length : int }
 (** Some key properties of a data series, like its name, type, and length *)
-
 
 module type S = sig
   type t
@@ -47,7 +45,6 @@ module type S = sig
   (** [length d] returns the length (= number of entries) of the data series [s]. *)
 end
 
-
 module Floats : S with type dtype := float
 (** Module Floats for series of float data *)
 
@@ -57,15 +54,16 @@ module Ints : S with type dtype := int
 module Strings : S with type dtype := string
 (** Module Strings for series of string data *)
 
-
 type _ t =
   | SFloat : Floats.t -> float t
   | SInt : Ints.t -> int t
-  | SStr : Strings.t -> string t
-  (** Type for a series of data *)
+  | SStr : Strings.t -> string t  (** Type for a series of data *)
 
 val name : 'a t -> string
 (** The name identifier of a data series *)
+
+val length : 'a t -> int
+(** [length s] returns the length of [s]. *)
 
 val get : int -> 'a t -> 'a
 (** [get i s] returns the element of [s] at index [i].

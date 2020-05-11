@@ -13,7 +13,8 @@ let summary_to_string sum =
   Printf.sprintf "{name: %s; type: %s; length: %d}" sum.name sum.data_type
     sum.length
 
-let data_series_to_string : type a. a t -> string = fun s ->
+let data_series_to_string : type a. a t -> string =
+ fun s ->
   let sum = summary s in
   summary_to_string sum
 
@@ -21,8 +22,10 @@ let data_type = Alcotest.testable (Fmt.of_to_string data_type_to_string) ( = )
 
 let data_series_int : int t Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
+
 let data_series_float : float t Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
+
 let data_series_string : string t Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
 
@@ -51,6 +54,10 @@ let test_summary () =
     (summary s_strs)
 
 (* ---------------------------------------------------------------------- *)
+let test_length () =
+  Alcotest.(check int) "length of data series" 4 (length s_ints)
+
+(* ---------------------------------------------------------------------- *)
 let test_from_list () =
   Alcotest.(check data_series_int)
     "from_list -> SInt" s_ints
@@ -60,16 +67,14 @@ let test_from_list () =
     (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]));
   Alcotest.(check data_series_string)
     "from_list -> SStr" s_strs
-    (SStr
-       (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
 
 (* ---------------------------------------------------------------------- *)
 let test_get () =
   Alcotest.(check int) "test get first" 3 (get 0 s_ints);
   Alcotest.(check int) "test get last" 0 (get 3 s_ints);
   Alcotest.check_raises "test get out-of-bound"
-    (Invalid_argument "index out of bounds")
-    (fun () -> ignore(get 4 s_ints))
+    (Invalid_argument "index out of bounds") (fun () -> ignore (get 4 s_ints))
 
 (* ---------------------------------------------------------------------- *)
 let test_set () =
@@ -80,6 +85,7 @@ let test_set () =
 let test_set =
   [
     ("test summary", `Quick, test_summary);
+    ("test length", `Quick, test_length);
     ("test from_list", `Quick, test_from_list);
     ("test get", `Quick, test_get);
     ("test set", `Quick, test_set);
