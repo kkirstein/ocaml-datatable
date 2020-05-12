@@ -40,12 +40,14 @@ val summary : t -> summary
 val create : string -> 'a Series.t list -> t
 (** [create name data] creates a datatable with given [name] and [data].
     [data] can be left empty. *)
+  *)
 
 val get_col : string -> t -> column option
 (** [get_col name dt] Returns the column of given name of datatable [dt].
     Returns None if [name] does not exist. If more than one column of
     given name is present, only the first one found is returned. *)
 
+(*
 val get_row : ?names:string list -> int -> t -> row option
 (** [get_row i dt] Returns the data row of given numeric index [i] of datatable [dt].
     Return None if index is out-of-bounds. *)

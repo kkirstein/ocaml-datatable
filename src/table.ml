@@ -52,6 +52,19 @@ let summary dt =
       in
       { name = dt.name; num_rows = len; column_names = colnames }
 
+let get_col name dt =
+  match
+    List.filter
+      (fun c ->
+        match c with
+        | CFloat s -> Series.name s = name
+        | CInt s -> Series.name s = name
+        | CStr s -> Series.name s = name)
+      dt.columns
+  with
+  | [] -> None
+  | cs -> Some (List.hd cs)
+
 (*
 let create name data = { name; columns = data }
 
@@ -76,8 +89,4 @@ let get_row ?names idx dt =
   in
   if Row.is_empty row then None else Some row
 
-let get_col name dt =
-  match List.filter (fun c -> Series.name c = name) dt.columns with
-  | [] -> None
-  | cs -> Some (List.hd cs)
    *)
