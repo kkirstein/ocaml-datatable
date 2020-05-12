@@ -67,11 +67,18 @@ let get_col name dt =
 
 (*
 let create name data = { name; columns = data }
-
+*)
 let get_row ?names idx dt =
   let cols =
     match names with
-    | None -> List.map (fun x -> Series.name x) dt.columns
+    | None ->
+        List.map
+          (fun x ->
+            match x with
+            | CFloat c -> Series.name c
+            | CInt c -> Series.name c
+            | CStr c -> Series.name c)
+          dt.columns
     | Some n -> n
   in
   let row =
@@ -80,13 +87,24 @@ let get_row ?names idx dt =
     | _ -> (
         try
           List.fold_left
-            (fun acc c ->
-              let cname = Series.name c in
-              if List.mem cname cols then Row.add cname (Series.get idx c) acc
-              else acc)
+            (fun acc x ->
+              match x with
+              | CFloat c ->
+                  let cname = Series.name c in
+                  if List.mem cname cols then
+                    Row.add cname (Series.DFloat (Series.get idx c)) acc
+                  else acc
+              | CInt c ->
+                  let cname = Series.name c in
+                  if List.mem cname cols then
+                    Row.add cname (Series.DInt (Series.get idx c)) acc
+                  else acc
+              | CStr c ->
+                  let cname = Series.name c in
+                  if List.mem cname cols then
+                    Row.add cname (Series.DStr (Series.get idx c)) acc
+                  else acc)
             Row.empty dt.columns
         with _ -> Row.empty )
   in
   if Row.is_empty row then None else Some row
-
-   *)

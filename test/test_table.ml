@@ -25,41 +25,19 @@ let column_to_string col =
 
 let data_column = Alcotest.testable (Fmt.of_to_string column_to_string) ( = )
 
-(*
 let data_row_to_string row =
   match row with
   | Some r ->
       let data_to_string d =
         match d with
-        | name, DStr s -> name ^ ": " ^ s
-        | name, DFloat f -> name ^ ": " ^ string_of_float f
-        | name, DInt i -> name ^ ": " ^ string_of_int i
+        | name, Series.DStr s -> name ^ ": " ^ s
+        | name, Series.DFloat f -> name ^ ": " ^ string_of_float f
+        | name, Series.DInt i -> name ^ ": " ^ string_of_int i
       in
       Row.bindings r |> List.map data_to_string |> String.concat "; "
   | None -> "None"
 
 let data_row = Alcotest.testable (Fmt.of_to_string data_row_to_string) ( = )
-    *)
-(*
-let series_summary_to_string sum =
-  let open Series in
-  Printf.sprintf "{name: %s; type: %s; length: %d}" sum.name sum.data_type
-    sum.length
-
-let data_series_to_string : type a. a Series.t -> string =
- fun s ->
-  let sum = Series.summary s in
-  series_summary_to_string sum
-
-let data_series_int : int Series.t Alcotest.testable =
-  Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
-
-let data_series_float : float Series.t Alcotest.testable =
-  Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
-
-let data_series_string : string Series.t Alcotest.testable =
-  Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
-*)
 
 (* The tests *)
 let dt =
@@ -103,40 +81,42 @@ let test_get_col () =
     "get_col SFloat" (Some (CFloat exp_float)) (get_col "values" dt);
   Alcotest.(check (option data_column))
     "get_col SInt" (Some (CInt exp_int)) (get_col "count" dt);
-  Alcotest.(check (option data_column))
-    "get_col SInt" None (get_col "wrong" dt)
+  Alcotest.(check (option data_column)) "get_col SInt" None (get_col "wrong" dt)
 
 (* ---------------------------------------------------------------------- *)
-(* let test_get_row () =
+let test_get_row () =
   (* let exp = Some (Row.of_seq (List.to_seq [
          "order", DStr "zwei"; "values", DFloat 2.71; "count", DInt 2]))
      in *)
   let exp =
     Some
       ( Row.empty
-      |> Row.add "order" (DStr "zwei")
-      |> Row.add "values" (DFloat 2.71)
-      |> Row.add "count" (DInt 2) )
+      |> Row.add "count" (Series.DInt 2)
+      |> Row.add "values" (Series.DFloat 2.71)
+      |> Row.add "order" (Series.DStr "zwei") )
   in
   let act = get_row 1 dt in
+  print_endline (data_row_to_string act);
   Alcotest.(check data_row) "get_row" exp act
 
 (* ---------------------------------------------------------------------- *)
 let test_get_row_empty () =
-  Alcotest.(check data_row) "get_row empty" None (get_row ~names:[] 1 dt);
-  Alcotest.(check data_row) "get_row empty" None (get_row 3 dt);
   Alcotest.(check data_row)
-    "get_row empty" None
+    "get_row empty, no column" None (get_row ~names:[] 1 dt);
+  Alcotest.(check data_row)
+    "get_row empty, index out-of-bounds" None (get_row 3 dt);
+  Alcotest.(check data_row)
+    "get_row empty, invalid columns" None
     (get_row ~names:[ "eins"; "zwei" ] 1 dt)
 
 (* ---------------------------------------------------------------------- *)
-*)
+
 (* Test set *)
 let test_set =
   [
     ("test empty table", `Quick, test_empty_table);
     ("test summary", `Quick, test_summary);
     ("test get_col", `Quick, test_get_col);
-    (* ("test get_row", `Quick, test_get_row); *)
-    (* ("test get_row empty", `Quick, test_get_row_empty); *)
+    ("test get_row", `Quick, test_get_row);
+    ("test get_row empty", `Quick, test_get_row_empty);
   ]
