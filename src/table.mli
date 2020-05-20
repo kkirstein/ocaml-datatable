@@ -21,9 +21,7 @@ type summary = { name : string; num_rows : int; column_names : string list }
 (** Type for summary of a data table *)
 
 type column =
-  | CFloat of float Series.t
-  | CInt of int Series.t
-  | CStr of string Series.t
+  | Col : _ Series.t -> column
       (** Type of a single column with different data types *)
 
 val empty : string -> t
@@ -47,7 +45,6 @@ val get_col : string -> t -> column option
     Returns None if [name] does not exist. If more than one column of
     given name is present, only the first one found is returned. *)
 
-val get_row : ?names:string list -> int -> t -> row option
+(* val get_row : ?names:string list -> int -> t -> row option *)
 (** [get_row i dt] Returns the data row of given numeric index [i] of datatable [dt].
     Return None if index is out-of-bounds. *)
-
