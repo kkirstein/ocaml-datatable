@@ -18,7 +18,7 @@ let data_table =
     ( = )
 
 let column_to_string col =
-  let Col s = col in
+  let (Col s) = col in
   match s with
   | Series.SFloat _ -> Printf.sprintf "Float: %s" (Series.name s)
   | Series.SInt _ -> Printf.sprintf "Int: %s" (Series.name s)
@@ -85,7 +85,6 @@ let test_get_col () =
   Alcotest.(check (option data_column)) "get_col SInt" None (get_col "wrong" dt)
 
 (* ---------------------------------------------------------------------- *)
-(*
 let test_get_row () =
   (* let exp = Some (Row.of_seq (List.to_seq [
          "order", DStr "zwei"; "values", DFloat 2.71; "count", DInt 2]))
@@ -110,7 +109,7 @@ let test_get_row_empty () =
   Alcotest.(check data_row)
     "get_row empty, invalid columns" None
     (get_row ~names:[ "eins"; "zwei" ] 1 dt)
-*)
+
 (* ---------------------------------------------------------------------- *)
 
 (* Test set *)
@@ -119,6 +118,6 @@ let test_set =
     ("test empty table", `Quick, test_empty_table);
     ("test summary", `Quick, test_summary);
     ("test get_col", `Quick, test_get_col);
-(*  ("test get_row", `Quick, test_get_row);
-    ("test get_row empty", `Quick, test_get_row_empty); *)
+    ("test get_row", `Quick, test_get_row);
+    ("test get_row empty", `Quick, test_get_row_empty);
   ]

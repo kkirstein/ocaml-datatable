@@ -54,7 +54,7 @@ let get_col name dt =
 let create name data = { name; columns = data }
 *)
 
-(*
+
 let get_row ?names idx dt =
   let cols =
     match names with
@@ -76,10 +76,12 @@ let get_row ?names idx dt =
               let (Col s) = x in
               let cname = Series.name s in
               if List.mem cname cols then
-                Row.add cname (Series.DFloat (Series.get idx s)) acc
+                match s with
+                | Series.SFloat _ -> Row.add cname (Series.DFloat (Series.get idx s)) acc
+                | Series.SInt _ -> Row.add cname (Series.DInt (Series.get idx s)) acc
+                | Series.SStr _ -> Row.add cname (Series.DStr (Series.get idx s)) acc
               else acc)
             Row.empty dt.columns
         with _ -> Row.empty )
   in
   if Row.is_empty row then None else Some row
-*)
