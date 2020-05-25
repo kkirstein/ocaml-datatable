@@ -1,0 +1,4 @@
+(executables
+ (names iris_data)
+ (public_names iris_data)
+ (libraries datatable csv))
