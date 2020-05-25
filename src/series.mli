@@ -29,6 +29,10 @@ module type S = sig
   val name : t -> string
   (** The name identifier for the data column *)
 
+  val create : name:string -> value:dtype -> int -> t
+  (** [create ~name ~value len] creates a data series instance of given
+      length [len], name [name], and filled with [value]. *)
+
   val from_list : name:string -> dtype list -> t
   (** [from_list ~name l] constructs a data series instance from
       given list [l] and assigns [name] to it. *)

@@ -20,6 +20,10 @@ module type S = sig
   val name : t -> string
   (** The name identifier for the data column *)
 
+  val create : name:string -> value:dtype -> int -> t
+  (** [create ~name ~value len] creates a data series instance of given
+      length [len], name [name], and filled with [value]. *)
+
   val from_list : name:string -> dtype list -> t
   (** [from_list ~name l] constructs a data series instance from
       given list [l] and assigns [name] to it. *)
@@ -50,6 +54,11 @@ module Numeric = struct
 
     let name s = s.name
 
+    let create ~name ~value len =
+      let ary = Array1.create N.dtype_kind c_layout len in
+      Array1.fill ary value;
+      { name; data = ary }
+
     let from_list ~name l =
       { name; data = Array1.of_array N.dtype_kind c_layout (Array.of_list l) }
 
@@ -70,6 +79,9 @@ module Generic = struct
     type t = { name : string; data : E.dtype array }
 
     let name s = s.name
+
+    let create ~name ~value len =
+      {name; data = Array.make len value }
 
     let from_list ~name l = { name; data = Array.of_list l }
 
