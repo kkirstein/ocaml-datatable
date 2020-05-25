@@ -9,18 +9,28 @@ module Row = Map.Make (String)
 
 type column = Col : _ Series.t -> column
 
-type t = { name : string; columns : column list }
+type t = { name : string; length : int option; columns : column list }
 
 type row = Series.data_type Row.t
 
 type summary = { name : string; num_rows : int; column_names : string list }
 
-let empty name = { name; columns = [] }
+let empty name = { name; length = None; columns = [] }
 
-let add_col : type a. a Series.t -> t -> t =
+let add_col : type a. a Series.t -> t -> (t, [ `Invalid_length ]) result =
  fun s dt ->
-  let col = Col s in
-  { dt with columns = col :: dt.columns }
+  match dt.length with
+  | None ->
+      let col = Col s in
+      Ok
+        { dt with length = Some (Series.length s); columns = col :: dt.columns }
+  | Some l ->
+      if Series.length s = l then
+        let col = Col s in
+        Ok { dt with columns = col :: dt.columns }
+      else Error `Invalid_length
+
+let length dt = match dt.length with None -> 0 | Some i -> i
 
 let summary dt =
   match dt.columns with
@@ -54,7 +64,6 @@ let get_col name dt =
 let create name data = { name; columns = data }
 *)
 
-
 let get_row ?names idx dt =
   let cols =
     match names with
@@ -77,9 +86,12 @@ let get_row ?names idx dt =
               let cname = Series.name s in
               if List.mem cname cols then
                 match s with
-                | Series.SFloat _ -> Row.add cname (Series.DFloat (Series.get idx s)) acc
-                | Series.SInt _ -> Row.add cname (Series.DInt (Series.get idx s)) acc
-                | Series.SStr _ -> Row.add cname (Series.DStr (Series.get idx s)) acc
+                | Series.SFloat _ ->
+                    Row.add cname (Series.DFloat (Series.get idx s)) acc
+                | Series.SInt _ ->
+                    Row.add cname (Series.DInt (Series.get idx s)) acc
+                | Series.SStr _ ->
+                    Row.add cname (Series.DStr (Series.get idx s)) acc
               else acc)
             Row.empty dt.columns
         with _ -> Row.empty )

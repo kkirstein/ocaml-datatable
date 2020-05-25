@@ -43,18 +43,39 @@ let data_row = Alcotest.testable (Fmt.of_to_string data_row_to_string) ( = )
 (* The tests *)
 let dt =
   let open Datatable.Series in
+  let ( >>= ) = Result.bind in
   empty "data"
   |> add_col (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
-  |> add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
-  |> add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+  >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+  >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+  |> Result.get_ok
 
 (* ---------------------------------------------------------------------- *)
 let test_empty_table () =
   let empty_dt = empty "data" in
+  Alcotest.(check int) "empty table has zero rows" 0 (length empty_dt);
   Alcotest.(check table_summary)
     "empty table"
     { name = "data"; num_rows = 0; column_names = [] }
     (summary empty_dt)
+
+(* ---------------------------------------------------------------------- *)
+let test_invalid_length () =
+  let dt_result =
+    empty "data"
+    |> add_col
+         (SStr
+            (Series.Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+  in
+  Alcotest.(check bool) "length matches" true (Result.is_ok dt_result);
+  let invalid_result =
+    Result.bind dt_result
+      (add_col
+         (SStr
+            (Series.Strings.from_list ~name:"order"
+               [ "eins"; "zwei"; "drei"; "vier" ])))
+  in
+  Alcotest.(check bool) "length mismatch" true (Result.is_error invalid_result)
 
 (* ---------------------------------------------------------------------- *)
 let test_summary () =
@@ -116,6 +137,7 @@ let test_get_row_empty () =
 let test_set =
   [
     ("test empty table", `Quick, test_empty_table);
+    ("test invalid length", `Quick, test_invalid_length);
     ("test summary", `Quick, test_summary);
     ("test get_col", `Quick, test_get_col);
     ("test get_row", `Quick, test_get_row);

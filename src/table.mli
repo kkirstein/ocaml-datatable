@@ -27,8 +27,13 @@ type column =
 val empty : string -> t
 (** [empty name] creates an empty datatable with given [name]. *)
 
-val add_col : 'a Series.t -> t -> t
-(** [add_col s dt] adds the data series [s] as column to the data table [dt]. *)
+val add_col : 'a Series.t -> t -> (t, [`Invalid_length]) result
+(** [add_col s dt] adds the data series [s] as column to the data table [dt].
+    It checks that the length of the new data series matches the data table and returns
+    an [`Invalid_length] error otherwise. *)
+
+val length : t -> int
+(** [length dt] returns the length (= nmumber of rows) of given data table. *)
 
 val summary : t -> summary
 (** [summary dt] gives a short summary of given data table [dt], including
