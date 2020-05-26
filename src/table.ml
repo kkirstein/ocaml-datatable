@@ -14,6 +14,7 @@ type t = { name : string; length : int option; columns : column list }
 type row = Series.data_type Row.t
 
 type summary = { name : string; num_rows : int; column_names : string list }
+[@@deriving show]
 
 let empty name = { name; length = None; columns = [] }
 

@@ -15,5 +15,6 @@ build: [
 ]
 depends: [
 	"dune" {build}
+	"ppx_deriving"
 	"alcotest" {with-test}
 ]

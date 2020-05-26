@@ -17,6 +17,7 @@ type data_type =
   | DStr of string  (** Data type of a single element of a data series *)
 
 type summary = { name : string; data_type : string; length : int }
+[@@deriving show]
 (** Some key properties of a data series, like its name, type, and length *)
 
 module type S = sig

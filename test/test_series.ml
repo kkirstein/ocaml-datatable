@@ -9,14 +9,8 @@ let data_type_to_string d =
   | DFloat f -> "DFloat: " ^ string_of_float f
   | DStr s -> "DStr: " ^ s
 
-let summary_to_string sum =
-  Printf.sprintf "{name: %s; type: %s; length: %d}" sum.name sum.data_type
-    sum.length
-
 let data_series_to_string : type a. a t -> string =
- fun s ->
-  let sum = summary s in
-  summary_to_string sum
+ fun s -> summary s |> show_summary
 
 let data_type = Alcotest.testable (Fmt.of_to_string data_type_to_string) ( = )
 
@@ -29,7 +23,7 @@ let data_series_float : float t Alcotest.testable =
 let data_series_string : string t Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
 
-let data_summary = Alcotest.testable (Fmt.of_to_string summary_to_string) ( = )
+let data_summary = Alcotest.testable (Fmt.of_to_string show_summary) ( = )
 
 (* The tests *)
 let s_ints = SInt (Ints.from_list ~name:"count" [ 3; 2; 1; 0 ])

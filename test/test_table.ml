@@ -3,18 +3,12 @@
 open Datatable
 open Datatable.Table
 
-(* open Datatable.Series *)
-
 (* Testable types *)
-let summary_to_string sum =
-  Printf.sprintf "{Table: %s; Rows: %d; Columns: %s}" sum.name sum.num_rows
-    (String.concat ", " sum.column_names)
-
-let table_summary = Alcotest.testable (Fmt.of_to_string summary_to_string) ( = )
+let table_summary = Alcotest.testable (Fmt.of_to_string show_summary) ( = )
 
 let data_table =
   Alcotest.testable
-    (Fmt.of_to_string (fun x -> summary x |> summary_to_string))
+    (Fmt.of_to_string (fun x -> summary x |> show_summary))
     ( = )
 
 let column_to_string col =

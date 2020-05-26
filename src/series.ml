@@ -147,6 +147,7 @@ let set : type a. int -> a -> a t -> unit =
   | SStr s -> Strings.set idx d s
 
 type summary = { name : string; data_type : string; length : int }
+[@@deriving show]
 
 let summary : type a. a t -> summary = function
   | SFloat s ->

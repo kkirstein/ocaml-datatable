@@ -18,6 +18,7 @@ type row = Series.data_type Row.t
 (** Data type to hold data of a single row. *)
 
 type summary = { name : string; num_rows : int; column_names : string list }
+[@@deriving show]
 (** Type for summary of a data table *)
 
 type column =

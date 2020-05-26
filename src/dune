@@ -1,5 +1,6 @@
 ; vim: set sw=2 ts=2:
 (library
 	(name datatable)
-	(public_name datatable))
+	(public_name datatable)
+	(preprocess (pps ppx_deriving.show)))
 
