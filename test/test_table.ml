@@ -34,6 +34,22 @@ let data_row_to_string row =
 
 let data_row = Alcotest.testable (Fmt.of_to_string data_row_to_string) ( = )
 
+let data_table_result :
+    ( t,
+      [ `Invalid_index | `Invalid_datatype | `Invalid_column | `Invalid_length ]
+    )
+    result
+    Alcotest.testable =
+  Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
+
+let data_unit_result :
+    ( unit,
+      [ `Invalid_index | `Invalid_datatype | `Invalid_column | `Invalid_length ]
+    )
+    result
+    Alcotest.testable =
+  Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
+
 (* The tests *)
 let dt =
   let open Datatable.Series in
@@ -61,7 +77,8 @@ let test_invalid_length () =
          (SStr
             (Series.Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
   in
-  Alcotest.(check bool) "length matches" true (Result.is_ok dt_result);
+  (* Alcotest.(check data_table_result) "length matches" (Ok dt) dt_result; *)
+  Alcotest.(check bool) "length matches" true (dt_result |> Result.is_ok);
   let invalid_result =
     Result.bind dt_result
       (add_col
@@ -69,7 +86,9 @@ let test_invalid_length () =
             (Series.Strings.from_list ~name:"order"
                [ "eins"; "zwei"; "drei"; "vier" ])))
   in
-  Alcotest.(check bool) "length mismatch" true (Result.is_error invalid_result)
+  Alcotest.(check bool)
+    "length mismatch" true
+    (invalid_result |> Result.is_error)
 
 (* ---------------------------------------------------------------------- *)
 let test_summary () =
@@ -133,8 +152,7 @@ let test_set_row () =
     |> Row.add "count" (Series.DInt 13)
     |> Row.add "values" (Series.DFloat 17.4)
   in
-  Alcotest.(check bool) "set row" true (set_row row_data 1 dt |> Result.is_ok)
-  (* Alcotest.(check (result unit)) "set row" (Ok ()) (set_row row_data 1 dt) *)
+  Alcotest.(check data_unit_result) "set row" (Ok ()) (set_row row_data 1 dt)
 
 (* ---------------------------------------------------------------------- *)
 let test_set_row_invalid () =
@@ -156,9 +174,18 @@ let test_set_row_invalid () =
     |> Row.add "count" (Series.DInt 13)
     |> Row.add "values" (Series.DInt 17)
   in
-  Alcotest.(check bool) "set row invalid column" true (set_row row_data_invalid_column 1 dt |> Result.is_error);
-  Alcotest.(check bool) "set row invalid index" true (set_row row_data 3 dt |> Result.is_error);
-  Alcotest.(check bool) "set row invalid data type" true (set_row row_data_invalid_type 1 dt |> Result.is_error)
+  Alcotest.(check data_unit_result)
+    "set row invalid column"
+    (Error `Invalid_column)
+    (set_row row_data_invalid_column 1 dt);
+  Alcotest.(check data_unit_result)
+    "set row invalid index"
+    (Error `Invalid_index)
+    (set_row row_data 3 dt);
+  Alcotest.(check data_unit_result)
+    "set row invalid data type"
+    (Error `Invalid_datatype)
+    (set_row row_data_invalid_type 1 dt)
 
 (* ---------------------------------------------------------------------- *)
 
@@ -172,5 +199,5 @@ let test_set =
     ("test get_row", `Quick, test_get_row);
     ("test get_row empty", `Quick, test_get_row_empty);
     ("test set_row", `Quick, test_set_row);
-    ("test set_row invalid", `Quick, test_set_row_invalid)
+    ("test set_row invalid", `Quick, test_set_row_invalid);
   ]

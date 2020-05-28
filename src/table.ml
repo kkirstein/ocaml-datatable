@@ -21,7 +21,7 @@ type summary = { name : string; num_rows : int; column_names : string list }
 
 let empty name = { name; length = None; columns = [] }
 
-let add_col : type a. a Series.t -> t -> (t, [ `Invalid_length ]) result =
+let add_col : type a. a Series.t -> t -> (t, [> `Invalid_length ]) result =
  fun s dt ->
   match dt.length with
   | None ->

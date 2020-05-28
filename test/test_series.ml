@@ -1,5 +1,6 @@
 (* vim: set ft=ocaml sw=2 ts=2: *)
 
+open Datatable
 open Datatable.Series
 
 (* Testable types *)
@@ -24,6 +25,9 @@ let data_series_string : string t Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string data_series_to_string) ( = )
 
 let data_summary = Alcotest.testable (Fmt.of_to_string show_summary) ( = )
+
+let data_unit_result : (unit, [ `Invalid_index ]) result Alcotest.testable =
+  Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
 
 (* The tests *)
 let s_ints = SInt (Ints.from_list ~name:"count" [ 3; 2; 1; 0 ])
@@ -72,10 +76,12 @@ let test_get () =
 
 (* ---------------------------------------------------------------------- *)
 let test_set () =
-  Alcotest.(check bool) "test set" true (set 1 42 s_ints |> Result.is_ok);
+  Alcotest.(check data_unit_result) "test set" (Ok ()) (set 1 42 s_ints);
   Alcotest.(check int) "test set value" 42 (get 1 s_ints);
-  Alcotest.(check bool) "test set" true (set 4 42 s_ints |> Result.is_error)
-
+  Alcotest.(check data_unit_result)
+    "test invalid index"
+    (Error `Invalid_index)
+    (set 4 42 s_ints)
 
 (* Test set *)
 let test_set =
