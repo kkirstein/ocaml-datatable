@@ -72,8 +72,10 @@ let test_get () =
 
 (* ---------------------------------------------------------------------- *)
 let test_set () =
-  let () = set 1 42 s_ints in
-  Alcotest.(check int) "test set" 42 (get 1 s_ints)
+  Alcotest.(check bool) "test set" true (set 1 42 s_ints |> Result.is_ok);
+  Alcotest.(check int) "test set value" 42 (get 1 s_ints);
+  Alcotest.(check bool) "test set" true (set 4 42 s_ints |> Result.is_error)
+
 
 (* Test set *)
 let test_set =

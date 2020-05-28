@@ -56,6 +56,9 @@ val get_row : ?names:string list -> int -> t -> row option
     Return None if index is out-of-bounds. *)
 
 val set_row :
-  row -> int -> t -> (unit, [ `Invalid_column | `Invalid_datatype ]) result
+  row ->
+  int ->
+  t ->
+  (unit, [> `Invalid_column | `Invalid_datatype | `Invalid_index ]) result
 (** [set_row r i dt] Sets the data row of given numeric index [i] of datatable [dt].
     Returns respective error, if either index or column anme are invalid. *)

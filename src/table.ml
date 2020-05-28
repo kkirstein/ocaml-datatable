@@ -111,9 +111,9 @@ let set_row r i dt =
           match get_col n dt with
           | Some (Col s) -> (
               match (d, s) with
-              | Series.DFloat df, Series.SFloat s -> Ok (Series.Floats.set i df s)
-              | Series.DInt di, Series.SInt s -> Ok (Series.Ints.set i di s)
-              | Series.DStr ds, Series.SStr s -> Ok (Series.Strings.set i ds s)
+              | Series.DFloat df, Series.SFloat s -> Series.Floats.set i df s
+              | Series.DInt di, Series.SInt s -> Series.Ints.set i di s
+              | Series.DStr ds, Series.SStr s -> Series.Strings.set i ds s
               | _ -> Error `Invalid_datatype )
           | None -> Error `Invalid_column )
       | _ -> res)

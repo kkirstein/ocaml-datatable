@@ -32,9 +32,9 @@ module type S = sig
   (** [get i d] returns the element of [d] at index [i].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-  val set : int -> dtype -> t -> unit
+  val set : int -> dtype -> t -> (unit, [> `Invalid_index ]) result
   (** [set i d s] sets the element at index [i] to [d] of series [s].
-      Throws out-of-bounds exception, if [i] is out-of-bounds. *)
+      Signals [`Invalid_index] as error, if [i] is out-of-bounds. *)
 
   val length : t -> int
   (** [length d] returns the length (= number of entries) of the data series [s]. *)
@@ -64,7 +64,9 @@ module Numeric = struct
 
     let get idx s = Array1.get s.data idx
 
-    let set idx d s = Array1.set s.data idx d
+    let set idx d s =
+      try Ok (Array1.set s.data idx d)
+      with Invalid_argument _ -> Error `Invalid_index
 
     let length d = Array1.dim d.data
   end
@@ -80,14 +82,15 @@ module Generic = struct
 
     let name s = s.name
 
-    let create ~name ~value len =
-      {name; data = Array.make len value }
+    let create ~name ~value len = { name; data = Array.make len value }
 
     let from_list ~name l = { name; data = Array.of_list l }
 
     let get idx s = s.data.(idx)
 
-    let set idx d s = s.data.(idx) <- d
+    let set idx d s =
+      try Ok (s.data.(idx) <- d)
+      with Invalid_argument _ -> Error `Invalid_index
 
     let length d = Array.length d.data
   end
@@ -139,7 +142,7 @@ let get : type a. int -> a t -> a =
   | SInt s -> Ints.get idx s
   | SStr s -> Strings.get idx s
 
-let set : type a. int -> a -> a t -> unit =
+let set : type a. int -> a -> a t -> (unit, [> `Invalid_index ]) result =
  fun idx d s ->
   match s with
   | SFloat s -> Floats.set idx d s

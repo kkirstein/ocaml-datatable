@@ -137,7 +137,6 @@ let test_set_row () =
   (* Alcotest.(check (result unit)) "set row" (Ok ()) (set_row row_data 1 dt) *)
 
 (* ---------------------------------------------------------------------- *)
-(* ---------------------------------------------------------------------- *)
 let test_set_row_invalid () =
   let row_data =
     Row.empty
