@@ -154,11 +154,11 @@ let test_set_row_invalid () =
     Row.empty
     |> Row.add "order" (Series.DStr "zwölf")
     |> Row.add "count" (Series.DInt 13)
-    |> Row.add "values" (Series.DFloat 17.4)
+    |> Row.add "values" (Series.DInt 17)
   in
   Alcotest.(check bool) "set row invalid column" true (set_row row_data_invalid_column 1 dt |> Result.is_error);
-  Alcotest.(check bool) "set row invalid data type" true (set_row row_data_invalid_type 1 dt |> Result.is_error);
-  Alcotest.(check bool) "set row invalid index" true (set_row row_data 3 dt |> Result.is_error)
+  Alcotest.(check bool) "set row invalid index" true (set_row row_data 3 dt |> Result.is_error);
+  Alcotest.(check bool) "set row invalid data type" true (set_row row_data_invalid_type 1 dt |> Result.is_error)
 
 (* ---------------------------------------------------------------------- *)
 
