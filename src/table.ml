@@ -11,6 +11,9 @@ type column = Col : _ Series.t -> column
 
 type t = { name : string; length : int option; columns : column list }
 
+(*
+type row_data = [ `Float of float | `Int of int | `String of string ]
+*)
 type row = Series.data_type Row.t
 
 type summary = { name : string; num_rows : int; column_names : string list }
@@ -98,3 +101,20 @@ let get_row ?names idx dt =
         with _ -> Row.empty )
   in
   if Row.is_empty row then None else Some row
+
+let set_row r i dt =
+  let cols = Row.bindings r in
+  List.fold_left (* TODO: Propagate error thru iteration *)
+    (fun res (n, d) ->
+      match res with
+      | Ok () -> (
+          match get_col n dt with
+          | Some (Col s) -> (
+              match (d, s) with
+              | Series.DFloat df, Series.SFloat s -> Ok (Series.Floats.set i df s)
+              | Series.DInt di, Series.SInt s -> Ok (Series.Ints.set i di s)
+              | Series.DStr ds, Series.SStr s -> Ok (Series.Strings.set i ds s)
+              | _ -> Error `Invalid_datatype )
+          | None -> Error `Invalid_column )
+      | _ -> res)
+    (Ok ()) cols

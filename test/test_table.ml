@@ -126,6 +126,42 @@ let test_get_row_empty () =
     (get_row ~names:[ "eins"; "zwei" ] 1 dt)
 
 (* ---------------------------------------------------------------------- *)
+let test_set_row () =
+  let row_data =
+    Row.empty
+    |> Row.add "order" (Series.DStr "zwölf")
+    |> Row.add "count" (Series.DInt 13)
+    |> Row.add "values" (Series.DFloat 17.4)
+  in
+  Alcotest.(check bool) "set row" true (set_row row_data 1 dt |> Result.is_ok)
+  (* Alcotest.(check (result unit)) "set row" (Ok ()) (set_row row_data 1 dt) *)
+
+(* ---------------------------------------------------------------------- *)
+(* ---------------------------------------------------------------------- *)
+let test_set_row_invalid () =
+  let row_data =
+    Row.empty
+    |> Row.add "order" (Series.DStr "zwölf")
+    |> Row.add "count" (Series.DInt 13)
+    |> Row.add "values" (Series.DFloat 17.4)
+  in
+  let row_data_invalid_column =
+    Row.empty
+    |> Row.add "order" (Series.DStr "zwölf")
+    |> Row.add "count2" (Series.DInt 13)
+    |> Row.add "values" (Series.DFloat 17.4)
+  in
+  let row_data_invalid_type =
+    Row.empty
+    |> Row.add "order" (Series.DStr "zwölf")
+    |> Row.add "count" (Series.DInt 13)
+    |> Row.add "values" (Series.DFloat 17.4)
+  in
+  Alcotest.(check bool) "set row invalid column" true (set_row row_data_invalid_column 1 dt |> Result.is_error);
+  Alcotest.(check bool) "set row invalid data type" true (set_row row_data_invalid_type 1 dt |> Result.is_error);
+  Alcotest.(check bool) "set row invalid index" true (set_row row_data 3 dt |> Result.is_error)
+
+(* ---------------------------------------------------------------------- *)
 
 (* Test set *)
 let test_set =
@@ -136,4 +172,6 @@ let test_set =
     ("test get_col", `Quick, test_get_col);
     ("test get_row", `Quick, test_get_row);
     ("test get_row empty", `Quick, test_get_row_empty);
+    ("test set_row", `Quick, test_set_row);
+    ("test set_row invalid", `Quick, test_set_row_invalid)
   ]

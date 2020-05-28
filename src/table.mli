@@ -28,7 +28,7 @@ type column =
 val empty : string -> t
 (** [empty name] creates an empty datatable with given [name]. *)
 
-val add_col : 'a Series.t -> t -> (t, [`Invalid_length]) result
+val add_col : 'a Series.t -> t -> (t, [ `Invalid_length ]) result
 (** [add_col s dt] adds the data series [s] as column to the data table [dt].
     It checks that the length of the new data series matches the data table and returns
     an [`Invalid_length] error otherwise. *)
@@ -54,3 +54,8 @@ val get_col : string -> t -> column option
 val get_row : ?names:string list -> int -> t -> row option
 (** [get_row i dt] Returns the data row of given numeric index [i] of datatable [dt].
     Return None if index is out-of-bounds. *)
+
+val set_row :
+  row -> int -> t -> (unit, [ `Invalid_column | `Invalid_datatype ]) result
+(** [set_row r i dt] Sets the data row of given numeric index [i] of datatable [dt].
+    Returns respective error, if either index or column anme are invalid. *)
