@@ -77,7 +77,6 @@ let test_invalid_length () =
          (SStr
             (Series.Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
   in
-  (* Alcotest.(check data_table_result) "length matches" (Ok dt) dt_result; *)
   Alcotest.(check bool) "length matches" true (dt_result |> Result.is_ok);
   let invalid_result =
     Result.bind dt_result
@@ -86,9 +85,10 @@ let test_invalid_length () =
             (Series.Strings.from_list ~name:"order"
                [ "eins"; "zwei"; "drei"; "vier" ])))
   in
-  Alcotest.(check bool)
-    "length mismatch" true
-    (invalid_result |> Result.is_error)
+  Alcotest.(check data_table_result)
+    "length mismatch"
+    (Error `Invalid_length)
+    invalid_result
 
 (* ---------------------------------------------------------------------- *)
 let test_summary () =
