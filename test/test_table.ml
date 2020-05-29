@@ -51,6 +51,8 @@ let data_unit_result :
   Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
 
 (* The tests *)
+let ( >>= ) = Result.bind
+
 (* ---------------------------------------------------------------------- *)
 let test_empty_table () =
   let empty_dt = empty "data" in
@@ -85,10 +87,9 @@ let test_invalid_length () =
 let test_summary () =
   let dt =
     let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
@@ -106,10 +107,9 @@ let test_summary () =
 let test_get_col () =
   let dt =
     let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
@@ -136,10 +136,9 @@ let test_get_row () =
      in *)
   let dt =
     let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
@@ -159,10 +158,9 @@ let test_get_row () =
 let test_get_row_empty () =
   let dt =
     let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
@@ -177,17 +175,15 @@ let test_get_row_empty () =
 
 (* ---------------------------------------------------------------------- *)
 let test_set_row () =
+  let open Datatable.Series in
   let dt =
-    let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
   in
-  let open Datatable.Series in
   let row_data =
     Row.empty
     |> Row.add "order" (DStr "zwölf")
@@ -195,10 +191,9 @@ let test_set_row () =
     |> Row.add "values" (DFloat 17.4)
   in
   let exp_dt =
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwölf"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwölf"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 17.4; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 13; 1 ]))
     |> Result.get_ok
@@ -211,10 +206,9 @@ let test_set_row_partial () =
   let open Datatable.Series in
   let dt =
     let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
@@ -225,10 +219,9 @@ let test_set_row_partial () =
     |> Row.add "values" (DFloat 17.4)
   in
   let exp_dt =
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwölf"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwölf"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 17.4; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
@@ -240,10 +233,9 @@ let test_set_row_partial () =
 let test_set_row_invalid () =
   let dt =
     let open Datatable.Series in
-    let ( >>= ) = Result.bind in
-    empty "data"
-    |> add_col
-         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
     >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
