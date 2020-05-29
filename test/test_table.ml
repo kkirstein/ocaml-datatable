@@ -51,15 +51,6 @@ let data_unit_result :
   Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
 
 (* The tests *)
-let dt =
-  let open Datatable.Series in
-  let ( >>= ) = Result.bind in
-  empty "data"
-  |> add_col (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
-  >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
-  >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
-  |> Result.get_ok
-
 (* ---------------------------------------------------------------------- *)
 let test_empty_table () =
   let empty_dt = empty "data" in
@@ -92,6 +83,16 @@ let test_invalid_length () =
 
 (* ---------------------------------------------------------------------- *)
 let test_summary () =
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
   Alcotest.(check table_summary)
     "table summary"
     {
@@ -103,6 +104,16 @@ let test_summary () =
 
 (* ---------------------------------------------------------------------- *)
 let test_get_col () =
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
   let exp_str =
     Series.(SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
   in
@@ -123,6 +134,16 @@ let test_get_row () =
   (* let exp = Some (Row.of_seq (List.to_seq [
          "order", DStr "zwei"; "values", DFloat 2.71; "count", DInt 2]))
      in *)
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
   let exp =
     Some
       ( Row.empty
@@ -136,6 +157,16 @@ let test_get_row () =
 
 (* ---------------------------------------------------------------------- *)
 let test_get_row_empty () =
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
   Alcotest.(check data_row)
     "get_row empty, no column" None (get_row ~names:[] 1 dt);
   Alcotest.(check data_row)
@@ -146,16 +177,77 @@ let test_get_row_empty () =
 
 (* ---------------------------------------------------------------------- *)
 let test_set_row () =
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
+  let open Datatable.Series in
   let row_data =
     Row.empty
-    |> Row.add "order" (Series.DStr "zwölf")
-    |> Row.add "count" (Series.DInt 13)
-    |> Row.add "values" (Series.DFloat 17.4)
+    |> Row.add "order" (DStr "zwölf")
+    |> Row.add "count" (DInt 13)
+    |> Row.add "values" (DFloat 17.4)
   in
-  Alcotest.(check data_unit_result) "set row" (Ok ()) (set_row row_data 1 dt)
+  let exp_dt =
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwölf"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 17.4; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 13; 1 ]))
+    |> Result.get_ok
+  in
+  Alcotest.(check data_unit_result) "set row" (Ok ()) (set_row row_data 1 dt);
+  Alcotest.(check data_table) "set row side effect" exp_dt dt
+
+(* ---------------------------------------------------------------------- *)
+let test_set_row_partial () =
+  let open Datatable.Series in
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
+  let row_data =
+    Row.empty
+    |> Row.add "order" (DStr "zwölf")
+    |> Row.add "values" (DFloat 17.4)
+  in
+  let exp_dt =
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwölf"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 17.4; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
+  Alcotest.(check data_unit_result) "set row" (Ok ()) (set_row row_data 1 dt);
+  Alcotest.(check data_table) "set row side effect" exp_dt dt
 
 (* ---------------------------------------------------------------------- *)
 let test_set_row_invalid () =
+  let dt =
+    let open Datatable.Series in
+    let ( >>= ) = Result.bind in
+    empty "data"
+    |> add_col
+         (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
   let row_data =
     Row.empty
     |> Row.add "order" (Series.DStr "zwölf")
@@ -199,5 +291,6 @@ let test_set =
     ("test get_row", `Quick, test_get_row);
     ("test get_row empty", `Quick, test_get_row_empty);
     ("test set_row", `Quick, test_set_row);
+    ("test set_row partial", `Quick, test_set_row_partial);
     ("test set_row invalid", `Quick, test_set_row_invalid);
   ]
