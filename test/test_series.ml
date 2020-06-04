@@ -26,7 +26,7 @@ let data_series_string : string t Alcotest.testable =
 
 let data_summary = Alcotest.testable (Fmt.of_to_string show_summary) ( = )
 
-let data_unit_result : (unit, [ `Invalid_index ]) result Alcotest.testable =
+let data_unit_result : (int, [ `Invalid_index ]) result Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
 
 (* The tests *)
@@ -76,7 +76,7 @@ let test_get () =
 
 (* ---------------------------------------------------------------------- *)
 let test_set () =
-  Alcotest.(check data_unit_result) "test set" (Ok ()) (set 1 42 s_ints);
+  Alcotest.(check data_unit_result) "test set" (Ok 1) (set 1 42 s_ints);
   Alcotest.(check int) "test set value" 42 (get 1 s_ints);
   Alcotest.(check data_unit_result)
     "test invalid index"

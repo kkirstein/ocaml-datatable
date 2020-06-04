@@ -102,19 +102,19 @@ let get_row ?names idx dt =
   in
   if Row.is_empty row then None else Some row
 
-let set_row r i dt =
+let set_row r idx dt =
   let cols = Row.bindings r in
   List.fold_left (* TODO: Propagate error thru iteration *)
     (fun res (n, d) ->
       match res with
-      | Ok () -> (
+      | Ok _ -> (
           match get_col n dt with
           | Some (Col s) -> (
               match (d, s) with
-              | Series.DFloat df, Series.SFloat s -> Series.Floats.set i df s
-              | Series.DInt di, Series.SInt s -> Series.Ints.set i di s
-              | Series.DStr ds, Series.SStr s -> Series.Strings.set i ds s
+              | Series.DFloat df, Series.SFloat s -> Series.Floats.set idx df s
+              | Series.DInt di, Series.SInt s -> Series.Ints.set idx di s
+              | Series.DStr ds, Series.SStr s -> Series.Strings.set idx ds s
               | _ -> Error `Invalid_datatype )
           | None -> Error `Invalid_column )
       | _ -> res)
-    (Ok ()) cols
+    (Ok (-1)) cols

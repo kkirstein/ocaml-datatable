@@ -59,6 +59,7 @@ val set_row :
   row ->
   int ->
   t ->
-  (unit, [> `Invalid_column | `Invalid_datatype | `Invalid_index ]) result
-(** [set_row r i dt] Sets the data row of given numeric index [i] of datatable [dt].
+  (int, [> `Invalid_column | `Invalid_datatype | `Invalid_index ]) result
+(** [set_row r idx dt] Sets the data row of given numeric index [idx] of datatable [dt].
+    If successful [Ok idx] is returned.
     Returns respective error, if either index or column anme are invalid. *)

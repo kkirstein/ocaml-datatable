@@ -42,8 +42,8 @@ let data_table_result :
     Alcotest.testable =
   Alcotest.testable (Fmt.of_to_string Error.result_to_string) ( = )
 
-let data_unit_result :
-    ( unit,
+let data_row_result :
+    ( int,
       [ `Invalid_index | `Invalid_datatype | `Invalid_column | `Invalid_length ]
     )
     result
@@ -198,7 +198,7 @@ let test_set_row () =
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 13; 1 ]))
     |> Result.get_ok
   in
-  Alcotest.(check data_unit_result) "set row" (Ok ()) (set_row row_data 1 dt);
+  Alcotest.(check data_row_result) "set row" (Ok 1) (set_row row_data 1 dt);
   Alcotest.(check data_table) "set row side effect" exp_dt dt
 
 (* ---------------------------------------------------------------------- *)
@@ -226,7 +226,7 @@ let test_set_row_partial () =
     >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
     |> Result.get_ok
   in
-  Alcotest.(check data_unit_result) "set row" (Ok ()) (set_row row_data 1 dt);
+  Alcotest.(check data_row_result) "set row" (Ok 1) (set_row row_data 1 dt);
   Alcotest.(check data_table) "set row side effect" exp_dt dt
 
 (* ---------------------------------------------------------------------- *)
@@ -258,15 +258,15 @@ let test_set_row_invalid () =
     |> Row.add "count" (Series.DInt 13)
     |> Row.add "values" (Series.DInt 17)
   in
-  Alcotest.(check data_unit_result)
+  Alcotest.(check data_row_result)
     "set row invalid column"
     (Error `Invalid_column)
     (set_row row_data_invalid_column 1 dt);
-  Alcotest.(check data_unit_result)
+  Alcotest.(check data_row_result)
     "set row invalid index"
     (Error `Invalid_index)
     (set_row row_data 3 dt);
-  Alcotest.(check data_unit_result)
+  Alcotest.(check data_row_result)
     "set row invalid data type"
     (Error `Invalid_datatype)
     (set_row row_data_invalid_type 1 dt)

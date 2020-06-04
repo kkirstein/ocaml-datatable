@@ -42,9 +42,10 @@ module type S = sig
   (** [get i d] returns the element of [d] at index [i].
       Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-  val set : int -> dtype -> t -> (unit, [> `Invalid_index]) result
+  val set : int -> dtype -> t -> (int, [> `Invalid_index ]) result
   (** [set i d s] sets the element at index [i] to [d] of series [s].
-      Signals [`Invalid_index] as error, if [i] is out-of-bounds. *)
+      If successful, [Ok i] is returned, otherwise, signals [`Invalid_index] as error,
+      if [i] is out-of-bounds. *)
 
   val length : t -> int
   (** [length d] returns the length (= number of entries) of the data series [s]. *)
@@ -74,9 +75,10 @@ val get : int -> 'a t -> 'a
 (** [get i s] returns the element of [s] at index [i].
     Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
-val set : int -> 'a -> 'a t -> (unit, [> `Invalid_index]) result
+val set : int -> 'a -> 'a t -> (int, [> `Invalid_index ]) result
 (** [set i d s] sets the element of [d] at index [i] to the value of [d].
-      Signals [`Invalid_index] as error, if [i] is out-of-bounds. *)
+    If successful, [Ok i] is returned, otherwise, signals [`Invalid_index] as error,
+    if [i] is out-of-bounds. *)
 
 val summary : 'a t -> summary
 (** [summary d] returns a short summary of the data series [s]
