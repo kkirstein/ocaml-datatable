@@ -54,46 +54,44 @@ let create_cols col_spec len dt =
   let open Series in
   let cols = Table.Row.bindings col_spec in
   let rec loop cols res =
-    match cols with
-    | (n, d) :: cs -> (
-        match d with
-        | `Float ->
-            loop cs
-              ( Table.add_col (SFloat (Floats.create ~name:n ~value:0.0 len)) res
-              |> Result.get_ok )
-        | `Int ->
-            loop cs
-              ( Table.add_col (SInt (Ints.create ~name:n ~value:0 len)) res
-              |> Result.get_ok )
-        | `String ->
-            loop cs
-              ( Table.add_col (SStr (Strings.create ~name:n ~value:"" len)) res
-              |> Result.get_ok ) )
-    | [] -> res
+    match res with
+    | Ok dt -> (
+        match cols with
+        | (n, d) :: cs -> (
+            match d with
+            | `Float ->
+                loop cs
+                  (Table.add_col
+                     (SFloat (Floats.create ~name:n ~value:0.0 len))
+                     dt)
+            | `Int ->
+                loop cs
+                  (Table.add_col (SInt (Ints.create ~name:n ~value:0 len)) dt)
+            | `String ->
+                loop cs
+                  (Table.add_col
+                     (SStr (Strings.create ~name:n ~value:"" len))
+                     dt) )
+        | [] -> res )
+    | Error _ as e -> e
   in
-  loop cols dt
+  loop cols (Ok dt)
 
-(*let fill_cols row_data dt =
-  List.iteri
-    (fun i r ->
-      let cols = Table.Row.bindings r in
-      List.iter
-        (fun (n, d) ->
-          match Table.get_col n dt with
-          | Some c -> (
-              match c with
-              | Col (Series.SFloat s) -> Series.Floats.set i d s
-              | Col (Series.SInt s) -> Series.Ints.set i d s
-              | Col (Series.SStr s) -> Series.Strings.set i d s )
-          | None -> ())
-        cols)
-    row_data;
-      dt *)
+let fill_cols row_data dt =
+  match
+    List.fold_left
+      (fun res r ->
+        match res with Ok n -> Table.set_row r (n + 1) dt | Error _ as e -> e)
+      (Ok (-1)) row_data
+  with
+  | Ok _ -> Ok dt
+  | Error _ as e -> e
 
 let from_row_list name rows =
+  let ( >>= ) = Result.bind in
   let dt = Table.empty name in
   let len = List.length rows in
-  if len > 0 then create_cols col_spec len dt else dt
+  if len > 0 then create_cols col_spec len dt >>= fill_cols rows else Ok dt
 
 let summary_to_string sum =
   let open Table in
@@ -108,7 +106,7 @@ let () =
   Printf.printf " done (%d records in %.3fs).\n" (List.length data) (toc -. tic);
   let tic = Sys.time () in
   Printf.printf "Importing data ..";
-  let dt = from_row_list "iris" data in
+  let dt = from_row_list "iris" data |> Result.get_ok in
   let toc = Sys.time () in
   Printf.printf " done (%d rows in %.3fs):\n" (Table.length dt) (toc -. tic);
   Printf.printf "%s\n" (Table.summary dt |> summary_to_string)
