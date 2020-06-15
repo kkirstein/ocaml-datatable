@@ -8,7 +8,7 @@
 (** Module Series
     contains data containers for data series, e.g., integer, float or string.
 
-    I has common types and functions to create and access data series, and
+    It has common types and functions to create and access data series, and
     dedicated (sub-) modules for the concrete types *)
 
 type data_type =
