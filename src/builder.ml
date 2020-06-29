@@ -16,10 +16,10 @@ type coltype = [ `Int | `Float | `String ] Table.Row.t
 
 (** Definitions of the underlying data structure, e.g., data columns and their types *)
 module type D = sig
-  type rowdata
+  type record
   (** Type of a single data row *)
 
-  val convert : rowdata -> 'a Table.Row.t
+  val convert : record -> Series.data_type Table.Row.t
 end
 
 (** Module signature of a data builder *)
@@ -41,7 +41,7 @@ module type S = sig
 end
 
 (** Functor to generate a data table builder *)
-module Make (Data : D) : S with type row_t := Data.rowdata = struct
+module Make (Data : D) : S with type row_t := Data.record = struct
   type t = {
     name : string;
     colspec : [ `Int | `Float | `String ] Table.Row.t;
