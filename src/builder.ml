@@ -11,9 +11,6 @@
 
 *)
 
-type coltype = [ `Int | `Float | `String ] Table.Row.t
-(** Specifies name and data type of columns *)
-
 (** Definitions of the underlying data structure, e.g., data columns and their types *)
 module type D = sig
   type record
@@ -28,7 +25,7 @@ module type S = sig
 
   type row_t
 
-  val create : string -> coltype -> t
+  val create : string -> [ `Int | `Float | `String ] Table.Row.t -> t
 
   val add : row_t -> t -> t
 
