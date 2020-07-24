@@ -12,14 +12,6 @@
 open Datatable
 
 (* column specification *)
-let col_spec =
-  let open Table in
-  Row.empty
-  |> Row.add "sepal_length" `Float
-  |> Row.add "sepal_width" `Float
-  |> Row.add "petal_length" `Float
-  |> Row.add "petal_width" `Float
-  |> Row.add "species" `String
 
 (* convert single record *)
 let parse_float str =
@@ -38,9 +30,18 @@ let row_from_strings strs =
       |> Row.add "species" (DStr spec)
   | _ -> Row.empty
 
-
 module Csv_reader = Builder.Make (struct
   type record = string list
+
+  let colspec =
+    let open Table in
+    Row.empty
+    |> Row.add "sepal_length" `Float
+    |> Row.add "sepal_width" `Float
+    |> Row.add "petal_length" `Float
+    |> Row.add "petal_width" `Float
+    |> Row.add "species" `String
+
   let convert = row_from_strings
 end)
 
@@ -51,12 +52,10 @@ let read_data path =
   let table =
     Csv.fold_left
       ~f:(fun reader r -> Csv_reader.add r reader)
-      ~init:(Csv_reader.create "iris" col_spec)
-      csv
+      ~init:(Csv_reader.create "iris") csv
   in
   Csv.close_in csv;
   Csv_reader.to_table table
-
 
 let summary_to_string sum =
   let open Table in

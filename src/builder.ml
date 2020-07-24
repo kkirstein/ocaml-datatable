@@ -14,7 +14,8 @@
 (** Definitions of the underlying data structure, e.g., data columns and their types *)
 module type D = sig
   type record
-  (** Type of a single data row *)
+
+  val colspec : [> `Int | `Float | `String ] Table.Row.t
 
   val convert : record -> Series.data_type Table.Row.t
 end
@@ -25,7 +26,7 @@ module type S = sig
 
   type row_t
 
-  val create : string -> [ `Int | `Float | `String ] Table.Row.t -> t
+  val create : string -> t
 
   val add : row_t -> t -> t
 
@@ -41,18 +42,18 @@ end
 module Make (Data : D) : S with type row_t := Data.record = struct
   type t = {
     name : string;
-    colspec : [ `Int | `Float | `String ] Table.Row.t;
+    (* colspec : [ `Int | `Float | `String ] Table.Row.t; *)
     rows : Series.data_type Table.Row.t list;
   }
 
-  let create name colspec = { name; colspec; rows = [] }
+  let create name = { name; rows = [] }
 
   let add data builder =
     { builder with rows = Data.convert data :: builder.rows }
 
   let create_cols builder dt =
     let open Series in
-    let cols = Table.Row.bindings builder.colspec in
+    let cols = Table.Row.bindings Data.colspec in
     let len = List.length builder.rows in
     let rec loop cols res =
       match res with

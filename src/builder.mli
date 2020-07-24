@@ -16,6 +16,9 @@ module type D = sig
   type record
   (** Type of a single data row *)
 
+  val colspec : [> `Int | `Float | `String ] Table.Row.t
+  (** defines the names and datatypes of columns of the built table *)
+
   val convert : record -> Series.data_type Table.Row.t
   (** [convert record] converts given data [record] to a suitable data row type *)
 end
@@ -28,9 +31,8 @@ module type S = sig
   type row_t
   (** Abstract data type of a single data row *)
 
-  val create : string -> [ `Int | `Float | `String ] Table.Row.t -> t
-  (** [create name colspec] creates a builder instance with given
-      [name] and column type(s) specifiction [colspec]. *)
+  val create : string -> t
+  (** [create name] creates a builder instance with given [name] *)
 
   val add : row_t -> t -> t
   (** [add record builder] adds a record to the given table builder
