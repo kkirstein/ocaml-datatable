@@ -30,6 +30,7 @@ module MyBuilder = Builder.Make (struct
   let convert = record_to_row
 end)
 
+(* ---------------------------------------------------------------------- *)
 let test_empty_table () =
   let b = MyBuilder.create "data" colspec in
   let t = MyBuilder.to_table b |> Result.get_ok in
@@ -43,5 +44,28 @@ let test_empty_table () =
       }
     (Table.summary t)
 
+(* ---------------------------------------------------------------------- *)
+let test_rows_added () =
+  let b =
+    MyBuilder.create "data" colspec
+    |> MyBuilder.add { order = "eins"; values = 1.47; count = 3 }
+    |> MyBuilder.add { order = "zwei"; values = 2.71; count = 2 }
+    |> MyBuilder.add { order = "drei"; values = 3.14; count = 1 }
+  in
+  let t = MyBuilder.to_table b |> Result.get_ok in
+  Alcotest.(check table_summary)
+    "table summary"
+    Table.
+      {
+        name = "data";
+        num_rows = 3;
+        column_names = [ "count"; "order"; "values" ];
+      }
+    (Table.summary t)
+
 (* Test set *)
-let test_set = [ ("test empty table", `Quick, test_empty_table) ]
+let test_set =
+  [
+    ("test empty table", `Quick, test_empty_table);
+    ("test rows added", `Quick, test_rows_added);
+  ]
