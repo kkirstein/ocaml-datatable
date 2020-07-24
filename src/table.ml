@@ -50,6 +50,7 @@ let summary dt =
             let (Col s) = x in
             Series.name s)
           cs
+        |> List.sort compare
       in
       { name = dt.name; num_rows = len; column_names = colnames }
 

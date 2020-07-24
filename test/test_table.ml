@@ -99,7 +99,7 @@ let test_summary () =
     {
       name = "data";
       num_rows = 3;
-      column_names = [ "count"; "values"; "order" ];
+      column_names = [ "count"; "order"; "values" ];
     }
     (summary dt)
 
