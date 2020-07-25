@@ -119,3 +119,5 @@ let set_row r idx dt =
           | None -> Error `Invalid_column )
       | _ -> res)
     (Ok (-1)) cols
+
+let append dt1 _dt2 = Ok dt1 (* FIXME: implement this *)

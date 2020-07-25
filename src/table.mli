@@ -63,3 +63,8 @@ val set_row :
 (** [set_row r idx dt] Sets the data row of given numeric index [idx] of datatable [dt].
     If successful [Ok idx] is returned.
     Returns respective error, if either index or column anme are invalid. *)
+
+val append : t -> t -> (t, [> `Invalid_column ]) result
+(** [concat dt1 dt2] appends [dt2] to [dt1].
+    If a [dt2] table contains a column not found in the first one,
+    an [`Invalid_column] error is returned. *)

@@ -131,9 +131,6 @@ let test_get_col () =
 
 (* ---------------------------------------------------------------------- *)
 let test_get_row () =
-  (* let exp = Some (Row.of_seq (List.to_seq [
-         "order", DStr "zwei"; "values", DFloat 2.71; "count", DInt 2]))
-     in *)
   let dt =
     let open Datatable.Series in
     Ok (empty "data")
@@ -272,6 +269,56 @@ let test_set_row_invalid () =
     (set_row row_data_invalid_type 1 dt)
 
 (* ---------------------------------------------------------------------- *)
+let test_append () =
+  let dt1 =
+    let open Datatable.Series in
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
+  let dt2 =
+    let open Datatable.Series in
+    Ok (empty "data2")
+    >>= add_col (SStr (Strings.from_list ~name:"order" [ "vier"; "fünf" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2 ]))
+    |> Result.get_ok
+  in
+  Alcotest.(check table_summary)
+    "append tables"
+    {
+      name = "data";
+      num_rows = 5;
+      column_names = [ "count"; "order"; "values" ];
+    }
+    (Table.append dt1 dt2 |> Result.get_ok |> Table.summary)
+
+(* ---------------------------------------------------------------------- *)
+let test_append_invalid () =
+  let dt1 =
+    let open Datatable.Series in
+    Ok (empty "data")
+    >>= add_col
+          (SStr (Strings.from_list ~name:"order" [ "eins"; "zwei"; "drei" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"values" [ 1.47; 2.71; 3.14 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2; 1 ]))
+    |> Result.get_ok
+  in
+  let dt2 =
+    let open Datatable.Series in
+    Ok (empty "data2")
+    >>= add_col (SStr (Strings.from_list ~name:"order" [ "vier"; "fünf" ]))
+    >>= add_col (SFloat (Floats.from_list ~name:"value" [ 1.47; 2.71 ]))
+    >>= add_col (SInt (Ints.from_list ~name:"count" [ 3; 2 ]))
+    |> Result.get_ok
+  in
+  Alcotest.(check data_table_result)
+    "append tables failed"
+    (Error `Invalid_column)
+    (Table.append dt1 dt2)
 
 (* Test set *)
 let test_set =
@@ -285,4 +332,6 @@ let test_set =
     ("test set_row", `Quick, test_set_row);
     ("test set_row partial", `Quick, test_set_row_partial);
     ("test set_row invalid", `Quick, test_set_row_invalid);
+    ("test append", `Quick, test_append);
+    ("test append failed", `Quick, test_append_invalid);
   ]
