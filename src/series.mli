@@ -48,7 +48,12 @@ module type S = sig
       if [i] is out-of-bounds. *)
 
   val length : t -> int
-  (** [length d] returns the length (= number of entries) of the data series [s]. *)
+  (** [length s] returns the length (= number of entries) of the data series [s]. *)
+
+  val blit : start:int -> t -> t -> (unit, [> `Invalid_length]) result
+  (** [blit ~start s1 s2] copies the content of series [s1] to [s2],
+      starting at position [start]. If [start] or start + length of s1
+      are out of bound of [s2], [`Invalid_length] eror is returned. *)
 end
 
 module Floats : S with type dtype := float
@@ -83,3 +88,7 @@ val set : int -> 'a -> 'a t -> (int, [> `Invalid_index ]) result
 val summary : 'a t -> summary
 (** [summary d] returns a short summary of the data series [s]
     with its data type, and some infos on the values, like length, min/max etc. *)
+
+val append : 'a t -> 'a t -> 'a t
+(** [append s1 s2] returns a new data series with [s2] appended to [s1].
+      The name identifier is taken from s1. *)

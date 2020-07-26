@@ -21,24 +21,16 @@ module type S = sig
   (** The name identifier for the data column *)
 
   val create : name:string -> value:dtype -> int -> t
-  (** [create ~name ~value len] creates a data series instance of given
-      length [len], name [name], and filled with [value]. *)
 
   val from_list : name:string -> dtype list -> t
-  (** [from_list ~name l] constructs a data series instance from
-      given list [l] and assigns [name] to it. *)
 
   val get : int -> t -> dtype
-  (** [get i d] returns the element of [d] at index [i].
-      Throws out-of-bounds exception, if [i] is out-of-bounds. *)
 
   val set : int -> dtype -> t -> (int, [> `Invalid_index ]) result
-  (** [set i d s] sets the element at index [i] to [d] of series [s].
-      If successful, [Ok i] is returned, otherwise, signals [`Invalid_index] as error,
-      if [i] is out-of-bounds. *)
 
   val length : t -> int
-  (** [length d] returns the length (= number of entries) of the data series [s]. *)
+
+  val blit : start:int -> t -> t -> (unit, [> `Invalid_length]) result
 end
 
 module Numeric = struct
@@ -66,10 +58,16 @@ module Numeric = struct
     let get idx s = Array1.get s.data idx
 
     let set idx d s =
-      try Array1.set s.data idx d; Ok idx
+      try
+        Array1.set s.data idx d;
+        Ok idx
       with Invalid_argument _ -> Error `Invalid_index
 
     let length d = Array1.dim d.data
+
+    let blit ~start _s1 _s2 =
+      let _ = start in
+     failwith "Not yet implmented!"
   end
 end
 
@@ -90,10 +88,16 @@ module Generic = struct
     let get idx s = s.data.(idx)
 
     let set idx d s =
-      try s.data.(idx) <- d; Ok idx
+      try
+        s.data.(idx) <- d;
+        Ok idx
       with Invalid_argument _ -> Error `Invalid_index
 
     let length d = Array.length d.data
+
+    let blit ~start _s1 _s2 =
+      let _ = start in
+      failwith "Not yet implmented!"
   end
 end
 
@@ -159,3 +163,5 @@ let summary : type a. a t -> summary = function
   | SInt s -> { name = Ints.name s; data_type = "int"; length = Ints.length s }
   | SStr s ->
       { name = Strings.name s; data_type = "string"; length = Strings.length s }
+
+let append _s1 _s2 = failwith "Not yet implemented!"
