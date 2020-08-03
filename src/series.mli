@@ -89,6 +89,6 @@ val summary : 'a t -> summary
 (** [summary d] returns a short summary of the data series [s]
     with its data type, and some infos on the values, like length, min/max etc. *)
 
-val append : 'a t -> 'a t -> 'a t
+val append : 'a t -> 'a t -> ('a t, [>`Invalid_length]) result
 (** [append s1 s2] returns a new data series with [s2] appended to [s1].
       The name identifier is taken from s1. *)

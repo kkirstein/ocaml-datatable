@@ -30,7 +30,7 @@ module type S = sig
 
   val length : t -> int
 
-  val blit : start:int -> t -> t -> (unit, [> `Invalid_length]) result
+  val blit : start:int -> t -> t -> (unit, [> `Invalid_length ]) result
 end
 
 module Numeric = struct
@@ -65,9 +65,13 @@ module Numeric = struct
 
     let length d = Array1.dim d.data
 
-    let blit ~start _s1 _s2 =
-      let _ = start in
-     failwith "Not yet implmented!"
+    let blit ~start src dst =
+      let src_len = Array1.dim src.data in
+      if Array1.dim dst.data < start + src_len then Error `Invalid_length
+      else
+        let dst_slice = Array1.sub dst.data start src_len in
+        Array1.blit src.data dst_slice;
+        Ok ()
   end
 end
 
@@ -164,4 +168,27 @@ let summary : type a. a t -> summary = function
   | SStr s ->
       { name = Strings.name s; data_type = "string"; length = Strings.length s }
 
-let append _s1 _s2 = failwith "Not yet implemented!"
+let append : type a. a t -> a t -> (a t, [> `Invalid_length ]) result =
+ fun s1 s2 ->
+  let ( >>= ) = Result.bind in
+  match (s1, s2) with
+  | SFloat s1, SFloat s2 -> (
+      let open Floats in
+      let s = create ~name:(name s1) ~value:0.0 (length s1 + length s2) in
+      match blit ~start:0 s1 s >>= fun () -> blit ~start:(length s1) s2 s with
+      | Ok () -> Ok (SFloat s)
+      | Error e -> Error e
+      (* NOTE: This shouldn't happen, as we control all indices here, probably thowing an exception here *)
+      )
+  | SInt s1, SInt s2 -> (
+      let open Ints in
+      let s = create ~name:(name s1) ~value:0 (length s1 + length s2) in
+      match blit ~start:0 s1 s >>= fun () -> blit ~start:(length s1) s2 s with
+      | Ok () -> Ok (SInt s)
+      | Error e -> Error e )
+  | SStr s1, SStr s2 -> (
+      let open Strings in
+      let s = create ~name:(name s1) ~value:"" (length s1 + length s2) in
+      match blit ~start:0 s1 s >>= fun () -> blit ~start:(length s1) s2 s with
+      | Ok () -> Ok (SStr s)
+      | Error e -> Error e )
