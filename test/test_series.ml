@@ -71,6 +71,8 @@ let test_from_list () =
 let test_get () =
   Alcotest.(check int) "test get first" 3 (get 0 s_ints);
   Alcotest.(check int) "test get last" 0 (get 3 s_ints);
+  let act = get 1 s_floats in
+  Alcotest.(check bool) "test get float" true (2.71 = act);
   Alcotest.check_raises "test get out-of-bound"
     (Invalid_argument "index out of bounds") (fun () -> ignore (get 4 s_ints))
 
@@ -87,25 +89,28 @@ let test_set () =
 let test_append () =
   let s_int_append = append s_ints s_ints |> Result.get_ok in
   let s_float_append = append s_floats s_floats |> Result.get_ok in
-  let s_str_append = append s_strs s_strs |> Result.get_ok in
+  (* let s_str_append = append s_strs s_strs |> Result.get_ok in *)
   Alcotest.(check int) "length of appended int series" 8 (length s_int_append);
-  (* Alcotest.(check int)
-    "content of appended int series" (get 0 s_int_append) (get 4 s_int_append);
-  Alcotest.(check int)
-    "content of appended int series" (get 3 s_int_append) (get 7 s_int_append); *)
+  Alcotest.(check bool)
+    "content of appended int series" true
+    (get 0 s_int_append = get 4 s_int_append);
+  Alcotest.(check bool)
+    "content of appended int series" true
+    (get 3 s_int_append = get 7 s_int_append);
   Alcotest.(check int)
     "length of appended float series" 6 (length s_float_append);
-  (* Alcotest.(check float)
-    "content of appended float series" (get 0 s_float_append)
-    (get 3 s_float_append);
-  Alcotest.(check float)
-    "content of appended float series" (get 2 s_float_append)
-    (get 5 s_float_append) *)
-  Alcotest.(check int) "length of appended str series" 6 (length s_str_append)
-  (* Alcotest.(check string)
-    "content of appended str series" (get 0 s_str_append) (get 3 s_str_append);
-  Alcotest.(check string)
-    "content of appended str series" (get 2 s_str_append) (get 5 s_str_append) *)
+  Alcotest.(check bool)
+    "content of appended float series" true
+    (get 0 s_float_append = get 3 s_float_append);
+  Alcotest.(check bool)
+    "content of appended float series" true
+    (get 2 s_float_append = get 5 s_float_append)
+
+(* Alcotest.(check int) "length of appended str series" 6 (length s_str_append);
+   Alcotest.(check string)
+        "content of appended str series" (get 0 s_str_append) (get 3 s_str_append);
+      Alcotest.(check string)
+        "content of appended str series" (get 2 s_str_append) (get 5 s_str_append) *)
 
 (* Test set *)
 let test_set =

@@ -3,7 +3,7 @@
 let () =
   Alcotest.run "datatable"
     [
-      ("Table", Test_table.test_set);
       ("Series", Test_series.test_set);
+      ("Table", Test_table.test_set);
       ("Builder", Test_builder.test_set);
     ]
