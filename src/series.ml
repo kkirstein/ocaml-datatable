@@ -99,9 +99,12 @@ module Generic = struct
 
     let length d = Array.length d.data
 
-    let blit ~start _s1 _s2 =
-      let _ = start in
-      failwith "Not yet implmented!"
+    let blit ~start src dst =
+      let src_len = Array.length src.data in
+      if Array.length dst.data < start + src_len then Error `Invalid_length
+      else (
+        Array.blit src.data 0 dst.data start src_len;
+        Ok () )
   end
 end
 
