@@ -120,4 +120,24 @@ let set_row r idx dt =
       | _ -> res)
     (Ok (-1)) cols
 
-let append dt1 _dt2 = Ok dt1 (* FIXME: implement this *)
+let check_columns cols1 cols2 =
+  List.fold_left
+    (fun res x -> if List.mem x cols2 then res else Error `Invalid_column)
+    (Ok ()) cols1
+
+let append dt1 dt2 =
+  let cols1 = (summary dt1).column_names
+  and cols2 = (summary dt2).column_names in
+  match (check_columns cols1 cols2, check_columns cols2 cols1) with
+  | Ok (), Ok () ->
+      List.fold_left
+        (fun dt c ->
+          match dt with
+          | Ok dt ->
+              let (Col s1) = get_col c dt1 |> Option.get in
+              let (Col s2) = get_col c dt2 |> Option.get in
+              add_col (Series.append s1 s2) dt
+          | err -> err)
+        (Ok (empty dt1.name))
+        cols1
+  | (Error `Invalid_column as err), _ | _, (Error `Invalid_column as err) -> err
