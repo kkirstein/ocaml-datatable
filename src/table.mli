@@ -64,7 +64,7 @@ val set_row :
     If successful [Ok idx] is returned.
     Returns respective error, if either index or column anme are invalid. *)
 
-val append : t -> t -> (t, [> `Invalid_column ]) result
+val append : t -> t -> (t, [> `Invalid_column | `Invalid_datatype | `Invalid_length]) result
 (** [concat dt1 dt2] appends [dt2] to [dt1].
     If a [dt2] table contains a column not found in the first one,
     an [`Invalid_column] error is returned. *)

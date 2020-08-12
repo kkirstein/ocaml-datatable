@@ -125,6 +125,22 @@ let check_columns cols1 cols2 =
     (fun res x -> if List.mem x cols2 then res else Error `Invalid_column)
     (Ok ()) cols1
 
+let append_column col dt1 dt2 dt =
+  match (get_col col dt1 |> Option.get, get_col col dt2 |> Option.get) with
+  | Col (Series.SInt _ as s1), Col (Series.SInt _ as s2) -> (
+      match Series.append s1 s2 with
+      | Ok c -> add_col c dt
+      | _ -> Error `Invalid_length )
+  | Col (Series.SFloat _ as s1), Col (Series.SFloat _ as s2) -> (
+      match Series.append s1 s2 with
+      | Ok c -> add_col c dt
+      | _ -> Error `Invalid_length )
+  | Col (Series.SStr _ as s1), Col (Series.SStr _ as s2) -> (
+      match Series.append s1 s2 with
+      | Ok c -> add_col c dt
+      | _ -> Error `Invalid_length )
+  | _ -> Error `Invalid_datatype
+
 let append dt1 dt2 =
   let cols1 = (summary dt1).column_names
   and cols2 = (summary dt2).column_names in
@@ -132,12 +148,7 @@ let append dt1 dt2 =
   | Ok (), Ok () ->
       List.fold_left
         (fun dt c ->
-          match dt with
-          | Ok dt ->
-              let (Col s1) = get_col c dt1 |> Option.get in
-              let (Col s2) = get_col c dt2 |> Option.get in
-              add_col (Series.append s1 s2) dt
-          | err -> err)
+          match dt with Ok dt -> append_column c dt1 dt2 dt | err -> err)
         (Ok (empty dt1.name))
         cols1
   | (Error `Invalid_column as err), _ | _, (Error `Invalid_column as err) -> err
