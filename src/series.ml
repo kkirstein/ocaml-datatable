@@ -21,22 +21,16 @@ module type S = sig
   (** The name identifier for the data column *)
 
   val create : name:string -> value:dtype -> int -> t
-
   val from_list : name:string -> dtype list -> t
-
   val get : int -> t -> dtype
-
   val set : int -> dtype -> t -> (int, [> `Invalid_index ]) result
-
   val length : t -> int
-
   val blit : start:int -> t -> t -> (unit, [> `Invalid_length ]) result
 end
 
 module Numeric = struct
   module type Num = sig
     type dtype
-
     type dtype_elt
 
     val dtype_kind : (dtype, dtype_elt) kind
@@ -84,11 +78,8 @@ module Generic = struct
     type t = { name : string; data : E.dtype array }
 
     let name s = s.name
-
     let create ~name ~value len = { name; data = Array.make len value }
-
     let from_list ~name l = { name; data = Array.of_list l }
-
     let get idx s = s.data.(idx)
 
     let set idx d s =
@@ -104,14 +95,13 @@ module Generic = struct
       if Array.length dst.data < start + src_len then Error `Invalid_length
       else (
         Array.blit src.data 0 dst.data start src_len;
-        Ok () )
+        Ok ())
   end
 end
 
 (* Float series *)
 module Floats = Numeric.Make (struct
   type dtype = float
-
   type dtype_elt = float64_elt
 
   let dtype_kind = float64
@@ -120,7 +110,6 @@ end)
 (* Int series *)
 module Ints = Numeric.Make (struct
   type dtype = int
-
   type dtype_elt = int_elt
 
   let dtype_kind = int
@@ -188,10 +177,10 @@ let append : type a. a t -> a t -> (a t, [> `Invalid_length ]) result =
       let s = create ~name:(name s1) ~value:0 (length s1 + length s2) in
       match blit ~start:0 s1 s >>= fun () -> blit ~start:(length s1) s2 s with
       | Ok () -> Ok (SInt s)
-      | Error e -> Error e )
+      | Error e -> Error e)
   | SStr s1, SStr s2 -> (
       let open Strings in
       let s = create ~name:(name s1) ~value:"" (length s1 + length s2) in
       match blit ~start:0 s1 s >>= fun () -> blit ~start:(length s1) s2 s with
       | Ok () -> Ok (SStr s)
-      | Error e -> Error e )
+      | Error e -> Error e)

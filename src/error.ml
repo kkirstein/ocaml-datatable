@@ -5,11 +5,10 @@
   Distributed under the MIT lincense.
  *)
 
-(** Module Error
-    An utility module for easy error handling.
+(** Module Error An utility module for easy error handling.
 
-    I supports a common polymorphic variant for unified error handling
-    for all modules of this package. *)
+    I supports a common polymorphic variant for unified error handling for all
+    modules of this package. *)
 
 let to_string = function
   | `Invalid_index -> "Invalid index"

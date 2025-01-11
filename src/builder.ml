@@ -5,29 +5,24 @@
   Distributed under the MIT lincense.
  *)
 
-(** Module Builder
-    A module functor and respective types to suuport easy
-    data aggregation into tables.
+(** Module Builder A module functor and respective types to suuport easy data
+    aggregation into tables. *)
 
-*)
-
-(** Definitions of the underlying data structure, e.g., data columns and their types *)
+(** Definitions of the underlying data structure, e.g., data columns and their
+    types *)
 module type D = sig
   type record
 
   val colspec : [> `Int | `Float | `String ] Table.Row.t
-
   val convert : record -> Series.data_type Table.Row.t
 end
 
 (** Module signature of a data builder *)
 module type S = sig
   type t
-
   type row_t
 
   val create : string -> t
-
   val add : row_t -> t -> t
 
   val to_table :
@@ -73,8 +68,8 @@ module Make (Data : D) : S with type row_t := Data.record = struct
                   loop cs
                     (Table.add_col
                        (SStr (Strings.create ~name:n ~value:"" len))
-                       dt) )
-          | [] -> res )
+                       dt))
+          | [] -> res)
       | Error _ as e -> e
     in
     loop cols (Ok dt)

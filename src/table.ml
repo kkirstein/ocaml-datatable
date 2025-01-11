@@ -8,7 +8,6 @@
 module Row = Map.Make (String)
 
 type column = Col : _ Series.t -> column
-
 type t = { name : string; length : int option; columns : column list }
 
 (*
@@ -99,7 +98,7 @@ let get_row ?names idx dt =
                     Row.add cname (Series.DStr (Series.get idx s)) acc
               else acc)
             Row.empty dt.columns
-        with _ -> Row.empty )
+        with _ -> Row.empty)
   in
   if Row.is_empty row then None else Some row
 
@@ -115,8 +114,8 @@ let set_row r idx dt =
               | Series.DFloat df, Series.SFloat s -> Series.Floats.set idx df s
               | Series.DInt di, Series.SInt s -> Series.Ints.set idx di s
               | Series.DStr ds, Series.SStr s -> Series.Strings.set idx ds s
-              | _ -> Error `Invalid_datatype )
-          | None -> Error `Invalid_column )
+              | _ -> Error `Invalid_datatype)
+          | None -> Error `Invalid_column)
       | _ -> res)
     (Ok (-1)) cols
 
@@ -130,15 +129,15 @@ let append_column col dt1 dt2 dt =
   | Col (Series.SInt _ as s1), Col (Series.SInt _ as s2) -> (
       match Series.append s1 s2 with
       | Ok c -> add_col c dt
-      | _ -> Error `Invalid_length )
+      | _ -> Error `Invalid_length)
   | Col (Series.SFloat _ as s1), Col (Series.SFloat _ as s2) -> (
       match Series.append s1 s2 with
       | Ok c -> add_col c dt
-      | _ -> Error `Invalid_length )
+      | _ -> Error `Invalid_length)
   | Col (Series.SStr _ as s1), Col (Series.SStr _ as s2) -> (
       match Series.append s1 s2 with
       | Ok c -> add_col c dt
-      | _ -> Error `Invalid_length )
+      | _ -> Error `Invalid_length)
   | _ -> Error `Invalid_datatype
 
 let append dt1 dt2 =
