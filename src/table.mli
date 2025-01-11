@@ -7,7 +7,7 @@
 
 (** Datatable library
 
-    {e %%VERION%% - {{:%%PKG_HOMEPAGE%%}homepage}} *)
+    {e %%VERSION%% - {{:%%PKG_HOMEPAGE%%}homepage}} *)
 
 type t
 (** Abstract data type holding tabular data *)
