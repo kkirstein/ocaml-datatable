@@ -2,5 +2,6 @@
 (library
 	(name datatable)
 	(public_name datatable)
+	(libraries csv)
 	(preprocess (pps ppx_deriving.show)))
 
