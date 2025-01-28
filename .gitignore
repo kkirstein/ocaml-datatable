@@ -6,3 +6,7 @@
 _build/
 **/.merlin
 
+# container setup
+Dockerfile
+.devcontainer
+start-container.ps1
